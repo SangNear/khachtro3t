@@ -1,0 +1,41 @@
+.pad {
+    padding: 12px 20px;
+}
+
+.center {
+    text-align: center;
+}
+
+.contact-container {
+    display: flex;
+
+
+    flex-direction: column;
+    gap: 20px;
+
+    .contact-container--top {
+        background-color: #fff;
+        padding: 8px 16px;
+        border-radius: 6px;
+    }
+
+    .contact-container--bottom {
+        background-color: #fff;
+        padding: 8px 16px;
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .fontsize-mobile {
+        font-size: 12px !important;
+    }
+    .fontsize-mobile--tile {
+        font-size: 18px !important;
+    }
+
+
+    /* Khi chiều rộng của thiết bị nhỏ hơn hoặc bằng 600px, thay đổi fontSize */
+
+}
