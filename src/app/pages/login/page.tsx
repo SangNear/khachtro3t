@@ -15,8 +15,9 @@ import DialogChooseRoom from '@/app/components/dialogChooseRoom/page'
 import { DataApi } from '@/app/api/login'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
-const Login = () => {
 
+const Login = () => {
+  
   useEffect(() => {
     // Xóa dữ liệu từ localStorage khi vào trang Login
     localStorage.clear();
@@ -38,7 +39,7 @@ const Login = () => {
     setErrors('')
   }
   console.log("apirooom:", apiRoom);
-  
+
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
 
@@ -58,6 +59,7 @@ const Login = () => {
 
       const dataApiLogin = await response.json();
       const sophong = dataApiLogin.data ? dataApiLogin.data.length : 0;
+      
 
       if (dataApiLogin.status == 'false') {
         setErrors(dataApiLogin.message)
@@ -77,7 +79,7 @@ const Login = () => {
           localStorage.setItem("userData", JSON.stringify(dataApiLogin.data[0]));
           console.log("dataApiLogin.data-coc", dataApiLogin.data[0]);
 
-          // window.location.href = "/";
+          window.location.href = "/";
         }
 
         else {
@@ -101,7 +103,7 @@ const Login = () => {
     setCapcha(val);
   };
 
-
+ 
 
   return (
     <div className='login-container'>

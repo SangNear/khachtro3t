@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react'
 import "./page.scss"
 import { Divider, Stack, Typography } from '@mui/material'
 import styled from 'styled-components'
+import Loading from '@/app/loading'
 const ContactPage = () => {
 
     const [hopdongApi, setHopdongApi] = useState<ApiHopdongResponse>()
-
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const userApi = window.localStorage.getItem('userData');
@@ -34,6 +35,7 @@ const ContactPage = () => {
 
                         const data: ApiHopdongResponse = await response.json();
                         setHopdongApi(data)
+                        setIsLoading(false)
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }
@@ -43,12 +45,43 @@ const ContactPage = () => {
             }
         }
     }, []);
-    console.log("api hop dong", hopdongApi?.data.allKhachHD[0].ten_khach);
+    console.log("api hop dong", hopdongApi);
+
+    const dinhDangNgayThang = (chuoiNgayThang?: string) => {
+        // Chuyển đổi thành đối tượng Date
+        if (chuoiNgayThang) {
+            var ngayThang = new Date(chuoiNgayThang);
+
+            // Lấy thông tin về ngày, tháng, năm
+            var ngay = ngayThang.getDate();
+            var thang = ngayThang.getMonth() + 1; // Tháng bắt đầu từ 0
+            var nam = ngayThang.getFullYear();
+
+            // Định dạng lại theo yêu cầu
+            var chuoiDinhDang = (ngay < 10 ? '0' : '') + ngay + '/' + (thang < 10 ? '0' : '') + thang + '/' + nam;
+
+            return chuoiDinhDang;
+        }
+
+    }
+
+    const dinhDangSo = (so?: number) => {
+        if (so) {
+            // Sử dụng toLocaleString để định dạng số
+            var chuoiDinhDang = Number(so).toLocaleString('vi-VN');
+
+            return chuoiDinhDang;
+        }
+
+    }
 
     // Gọi hàm async trong useEffect
 
     // Đối với trường hợp này, không có dependency array, nghĩa là hàm fetchData sẽ chạy mỗi khi component được render lại.
-
+    if (isLoading) {
+        // Render a loading indicator or any other UI while waiting for data
+        return <Loading />;
+    }
 
     return (
         <ContainerComponent2>
@@ -67,26 +100,26 @@ const ContactPage = () => {
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "16px" }}>- Điện thoại & Zalo: <b>0398.771.881</b></Typography>
 
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>BÊN B (BÊN THUÊ):</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Ông/bà: <b style={{ color: 'blue' }}>{hopdongApi?.data.allKhachHD[0].ten_khach}</b></Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Điện thoại: <b style={{ color: 'blue' }}>{hopdongApi?.data.allKhachHD[0].sdt_khach}</b></Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- CCCD: <b>{hopdongApi?.data.allKhachHD[0].cccd}</b></Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Ông/bà: <b style={{ color: 'blue' }}>{hopdongApi?.data.hopDong.khach.ten_khach}</b></Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Điện thoại: <b style={{ color: 'blue' }}>{hopdongApi?.data.hopDong.khach.sdt_khach}</b></Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- CCCD: <b>{hopdongApi?.data.hopDong.khach.cccd}</b></Typography>
 
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- Địa chỉ: 295B, Kp6, Hiệp Thành, Quận 12, TP.Hồ Chí Minh</Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", fontStyle: "italic", marginBottom: "24px" }}>Hợp đồng được lập ra được sự đồng ý của cả hai bên với các điều khoản sau:</Typography>
 
 
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 1: THÔNG TIN THUÊ VÀ MỤC ĐÍCH THUÊ</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Bên A đồng ý cho Bên B thuê <b style={{ color: 'blue' }}>Phòng QX11</b> </Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Bên A đồng ý cho Bên B thuê <b style={{ color: 'blue' }}>{hopdongApi?.data.hopDong.phong.loai} {hopdongApi?.data.hopDong.phong.ten}</b> </Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Mục đích thuê: <b>Để ở đúng theo quy định pháp luật Việt Nam</b> </Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- Tài sản bàn giao cho bên B như clip gồm:</Typography>
 
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 2: THỜI HẠN HỢP ĐỒNG</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thời hạn hợp đồng:  <b style={{ color: 'blue' }}>6 tháng</b> </Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Được tính từ ngày <b style={{ color: 'blue' }}>01/11/2023</b> đến ngày <b>01/05/2024</b> </Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thời hạn hợp đồng:  <b style={{ color: 'blue' }}>{hopdongApi?.data.hopDong.han_hop_dong}</b> </Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Được tính từ ngày <b style={{ color: 'blue' }}>{dinhDangNgayThang(hopdongApi?.data.hopDong.ngay_ky)}</b> đến ngày <b>01/05/2024</b> </Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- Nếu đến ngày hết thời hạn hợp đồng, Bên thuê không thông báo kết thúc hợp đồng trước 30 ngày thì mặc định sẽ đồng ý tiếp tục gia hạn hợp đồng này thêm 06 tháng</Typography>
 
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 3: TIỀN ĐẶT CỌC</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền bên B đặt cọc cho bên A là  <b style={{ color: 'blue' }}>3.500.000</b> </Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền bên B đặt cọc cho bên A là  <b style={{ color: 'blue' }}>{dinhDangSo(hopdongApi?.data.hopDong.gia_thue)}</b> </Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền đặt cọc không được dùng làm thay thế tiền thuê. </Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- Điều kiện hoàn cọc cho bên B là: hết thời hạn hợp đồng và phải báo trước 30 ngày.</Typography>
 
@@ -100,7 +133,7 @@ const ContactPage = () => {
                     <Stack direction='column' spacing={1} marginBottom="24px">
                         <Stack direction='row' spacing={2} justifyContent='center'>
                             <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền thuê: </Typography>
-                            <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: 'blue' }} >3.500.000</b> / tháng </Typography>
+                            <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: 'blue' }} >{dinhDangSo(hopdongApi?.data.hopDong.gia_thue)}</b> / tháng </Typography>
                         </Stack>
                         <Stack direction='row' spacing={2} justifyContent='center'>
                             <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền điện: </Typography>
@@ -126,7 +159,7 @@ const ContactPage = () => {
 
 
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 5: PHƯƠNG THỨC THANH TOÁN</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền thuê thu mỗi tháng một lần vào ngày <b style={{ color: 'blue' }}>1 đến 3</b> </Typography>
+                    <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền thuê thu mỗi tháng một lần vào ngày <b style={{ color: 'blue' }}>{hopdongApi?.data.hopDong.thanh_toan}</b> </Typography>
                     <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thanh toán đúng qua ngân hàng của:  <b>TRẦN HỒNG HIỆP</b> </Typography>
                     <Stack direction='column' spacing={1} marginBottom='24px'>
                         <Stack direction='row' spacing={2} justifyContent='center'>
@@ -187,7 +220,7 @@ const ContactPage = () => {
                     <Stack direction='column' spacing={1} marginBottom='24px'>
                         <Stack direction='row' spacing={2} justifyContent='center'>
                             <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Từ ngày: </Typography>
-                            <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%", whiteSpace: "nowrap" }}><b style={{ color: 'blue' }}>01/11/2023</b> đến <b style={{ color: 'blue' }}>30/11/2023</b></Typography>
+                            <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%", whiteSpace: "nowrap" }}><b style={{ color: 'blue' }}>{dinhDangNgayThang(hopdongApi?.data.hopDong.ngay_ky)}</b> đến <b style={{ color: 'blue' }}>30/11/2023</b></Typography>
                         </Stack>
 
                         <Stack direction='row' spacing={2} justifyContent='center'>
@@ -196,7 +229,7 @@ const ContactPage = () => {
                         </Stack>
                         <Stack direction='row' spacing={2} justifyContent='center'>
                             <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền thuê: </Typography>
-                            <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}> <b style={{ color: 'blue' }}>3.500.000 </b> / tháng</Typography>
+                            <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}> <b style={{ color: 'blue' }}>{dinhDangSo(hopdongApi?.data.hopDong.gia_thue)} </b> / tháng</Typography>
                         </Stack>
                         <Stack direction='row' spacing={2} justifyContent='center'>
                             <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền điện: </Typography>

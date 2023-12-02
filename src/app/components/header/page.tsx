@@ -36,23 +36,25 @@ import { DataApi } from "@/app/api/login";
 
 
 const HeaderComponent = () => {
+
     const pathname = usePathname();
     const [openSearchInput, setOpenSearchInput] = useState(false);
-    const [dataSession, setDataSession] = useState<DataApi>()
+    const [dataSession, setDataSession] = useState<ApiHopdongResponse>()
     const handleOpenSearchInput = () => {
         setOpenSearchInput(!openSearchInput);
     };
     const handleCloseSearchInput = () => {
         setOpenSearchInput(false);
-    }; 
+    };
     const [value, setValue] = React.useState('1');
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
-    
 
-    
+    console.log("dataSession from header", dataSession);
+
+
     const textfield = {
         position: "relative",
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
@@ -81,9 +83,8 @@ const HeaderComponent = () => {
             },
         },
     };
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
+    const fetchData = async () => {
+        try {
             const userApi = window.localStorage.getItem('userData');
             if (!userApi) {
                 // Redirect to login page if local storage is not present
@@ -91,13 +92,40 @@ const HeaderComponent = () => {
                 window.location.href = '/pages/login';
             } else {
                 const userData = JSON.parse(userApi);
-                setDataSession(userData);
+                let id_hop_dong = userData.id;
+                const response = await fetch("https://ad.tro4u.com/api/version/1.0/hopdong/get-chi-tiet-hop-dong", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        id_hop_dong
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                const data: ApiHopdongResponse = await response.json();
+                setDataSession(data);
+
+                // Lưu dữ liệu vào localStorage
+                localStorage.setItem('dataSession', JSON.stringify(data));
             }
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
-    }, []);
+    };
+
+    useEffect(() => {
+        fetchData()
+    }, [dataSession?.data.hopDong.tinh_trang_hop_dong]);
+
+    // useEffect(() => {
+    //     // Lưu trạng thái vào localStorage mỗi khi dataSession thay đổi
+    //     if (dataSession) {
+    //         localStorage.setItem('dataSession', JSON.stringify(dataSession));
+    //     }
+    // }, [dataSession]);
 
 
-
+    const imgUrl = `https://ad.tro4u.com/images/khachthue/avatar/${dataSession?.data.allKhachHD[0].avatar}`
     const handleLogout = () => {
         // Clear session storage
         localStorage.clear();
@@ -120,84 +148,115 @@ const HeaderComponent = () => {
             width: 330,
         },
     };
-
+    // if (!dataSession || !dataSession.data || !dataSession.data.hopDong) {
+    //     return null; // hoặc có thể return một phần tử UI tương ứng với trạng thái loading hoặc không có dữ liệu
+    // }
+    
 
     return (
         <div className="header-container">
             <div className="top">
                 <div className="left">
 
-                    <div style={{ width: 150 }} className="logo-container">
-                        <Image src={logo} alt="logo" priority={true} className="logo" width={150} height={50} />
+                    <div style={{ width: 'auto' }} className="logo-container">
+                        <Image src={logo} alt="logo" priority={true} className="logo" height={50} />
                     </div>
                 </div>
                 <div className="menu-container">
-                    <div className="menu-list">
-                        <div className={`menu-items ${pathname === "/" ? "active" : ""}`}>
-                            <TextSnippetOutlinedIcon className="icon" />
-                            <Link
-                                className={`menu__item-link ${pathname === "/" ? "active" : ""
-                                    }`}
-                                href="/"
+                    {dataSession?.data.hopDong.tinh_trang_hop_dong == 'Cho thuê' ?
+                        <div className="menu-list">
+                            <div className={`menu-items ${pathname === "/" ? "active" : ""}`}>
+                                <TextSnippetOutlinedIcon className="icon" />
+                                <Link
+                                    className={`menu__item-link ${pathname === "/" ? "active" : ""
+                                        }`}
+                                    href="/"
+                                >
+                                    Hóa đơn
+                                </Link>
+                            </div>
+
+                            <div
+                                className={`menu-items ${pathname === "/pages/contact/" ? "active" : ""}`}
                             >
-                                Hóa đơn
-                            </Link>
+                                <FileOpenOutlinedIcon className="icon" />
+                                <Link
+                                    className={`menu__item-link ${pathname === "/pages/contact/" ? "active" : ""
+                                        }`}
+                                    href="/pages/contact/"
+                                >
+                                    Hợp đồng
+                                </Link>
+                            </div>
+
+                            <div
+                                className={`menu-items ${pathname === "/pages/problem/" ? "active" : ""}`}
+                            >
+                                <LinkOffOutlinedIcon className="icon" />
+                                <Link
+                                    className={`menu__item-link ${pathname === "/pages/problem/" ? "active" : ""
+                                        }`}
+                                    href="/pages/problem/"
+                                >
+                                    Sự cố
+                                </Link>
+                            </div>
+
+                            <div
+                                className={`menu-items ${pathname === "/guestReport/" || pathname === "/income/"
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+                                <LocalGroceryStoreOutlinedIcon className="icon" />
+                                <Link
+                                    className={`menu__item-link ${pathname === "/guestReport/" || "/income/" ? "active" : ""
+                                        }`}
+                                    href="#"
+                                >
+                                    Chợ
+                                </Link>
+
+                            </div>
+
+
+
+                        </div>
+                        :
+                        <div className="menu-list">
+                            <div className={`menu-items ${pathname === "/" ? "active" : ""}`}>
+                                <TextSnippetOutlinedIcon className="icon" />
+                                <Link
+                                    className={`menu__item-link ${pathname === "/" ? "active" : ""
+                                        }`}
+                                    href="/"
+                                >
+                                    Phiếu cọc
+                                </Link>
+                            </div>
+
+                            <div
+                                className={`menu-items ${pathname === "/pages/contactModel/" ? "active" : ""}`}
+                            >
+                                <FileOpenOutlinedIcon className="icon" />
+                                <Link
+                                    className={`menu__item-link ${pathname === "/pages/contactModel/" ? "active" : ""
+                                        }`}
+                                    href="/pages/contactModel/"
+                                >
+                                    Mẫu hợp đồng thuê
+                                </Link>
+                            </div>
                         </div>
 
-                        <div
-                            className={`menu-items ${pathname === "/pages/contact/" ? "active" : ""}`}
-                        >
-                            <FileOpenOutlinedIcon className="icon" />
-                            <Link
-                                className={`menu__item-link ${pathname === "/pages/contact/" ? "active" : ""
-                                    }`}
-                                href="/pages/contact/"
-                            >
-                                Hợp đồng
-                            </Link>
-                        </div>
-                        <div
-                            className={`menu-items ${pathname === "/pages/problem/" ? "active" : ""}`}
-                        >
-                            <LinkOffOutlinedIcon className="icon" />
-                            <Link
-                                className={`menu__item-link ${pathname === "/pages/problem/" ? "active" : ""
-                                    }`}
-                                href="/pages/problem/"
-                            >
-                                Sự cố
-                            </Link>
-                        </div>
+                    }
 
-                        <div
-                            className={`menu-items ${pathname === "/guestReport/" || pathname === "/income/"
-                                ? "active"
-                                : ""
-                                }`}
-                        >
-                            <LocalGroceryStoreOutlinedIcon className="icon" />
-                            <Link
-                                className={`menu__item-link ${pathname === "/guestReport/" || "/income/" ? "active" : ""
-                                    }`}
-                                href="#"
-                            >
-                                Chợ
-                            </Link>
-                            
-                        </div>
-
-                        
-
-                    </div>
                 </div>
 
                 <div className="right-container">
                     <div className="right-items">
-                        <div className="search-cotainer">
-                            <SearchIcon
-                                className="search-icon"
-                                onClick={handleOpenSearchInput}
-                            />
+                        {/* <div className="search-cotainer">
+
                             <Modal
                                 open={openSearchInput}
                                 onClose={handleCloseSearchInput}
@@ -270,7 +329,7 @@ const HeaderComponent = () => {
 
                                 </Box>
                             </Modal>
-                        </div>
+                        </div> */}
                         <div className="menu-user">
                             <PersonOutlineOutlinedIcon
                                 sx={{ fontSize: "25px", color: "#fff", cursor: "pointer" }}
@@ -284,7 +343,7 @@ const HeaderComponent = () => {
                                         <div className="profile-container">
                                             <div className="avatar">
                                                 <Image
-                                                    src={avatar}
+                                                    src={imgUrl}
                                                     alt="avatar "
                                                     width={40}
                                                     height={40}
@@ -305,7 +364,7 @@ const HeaderComponent = () => {
                                                 color: "rgba(58, 53, 65, 0.68)",
                                             }}
                                         >
-                                            Họ và tên
+                                            {dataSession && dataSession?.data.allKhachHD[0].ten_khach}
                                         </span>
                                     </Link>
 
@@ -319,7 +378,7 @@ const HeaderComponent = () => {
                                                 color: "rgba(58, 53, 65, 0.68)",
                                             }}
                                         >
-                                            Số điện thoại
+                                            {dataSession && dataSession?.data.allKhachHD[0].sdt_khach}
                                         </span>
                                     </Link>
 
@@ -333,7 +392,7 @@ const HeaderComponent = () => {
                                                 color: "rgba(58, 53, 65, 0.68)",
                                             }}
                                         >
-                                            {dataSession && dataSession?.phong.ten}
+                                            {dataSession && dataSession?.data.hopDong.phong.ten}
                                         </span>
                                     </Link>
                                     <Divider />
@@ -344,73 +403,87 @@ const HeaderComponent = () => {
                                         onClick={handleLogout}
                                     >
                                         <LogoutIcon className="icon" style={{ color: "rgba(58, 53, 65, 0.68)" }} />
-                                        <span >Đăng xuất</span>
+                                        <span style={{
+                                            color: "rgba(58, 53, 65, 0.68)",
+                                        }}>Đăng xuất</span>
                                     </Link>
 
                                 </MenuList>
                             </Paper>
 
                         </div>
-                        
+
 
 
                     </div>
                 </div>
             </div>
 
-            
+
 
             <div className="menuMobile-container">
-                <div className="menuMobile-list">
-                    <Link
-                        href="/"
-                        className={`menuMobile-items ${pathname === "/" ? "activeMobieMenu" : ""
-                            } `}
-                    >
-                        <TextSnippetOutlinedIcon />
-                        <span>Hóa đơn</span>
-                    </Link>
+                {dataSession?.data.hopDong.tinh_trang_hop_dong == 'Cho thuê' ?
+                    <div className="menuMobile-list">
+                        <Link
+                            href="/"
+                            className={`menuMobile-items ${pathname === "/" ? "activeMobieMenu" : ""
+                                } `}
+                        >
+                            <TextSnippetOutlinedIcon />
+                            <span>Hóa đơn</span>
+                        </Link>
 
-                    <Link
-                        href="/pages/contact/"
-                        className={`menuMobile-items ${pathname === "/pages/contact/" ? "activeMobieMenu" : ""
-                            } `}
-                    >
-                        <FileOpenOutlinedIcon />
-                        <span>Hợp đồng</span>
-                    </Link>
+                        <Link
+                            href="/pages/contact/"
+                            className={`menuMobile-items ${pathname === "/pages/contact/" ? "activeMobieMenu" : ""
+                                } `}
+                        >
+                            <FileOpenOutlinedIcon />
+                            <span>Hợp đồng</span>
+                        </Link>
 
-                    <Link
-                        href="/pages/problem/"
-                        className={`menuMobile-items ${pathname === "/pages/problem/" ? "activeMobieMenu" : ""
-                            } `}
-                    >
-                        <LinkOffOutlinedIcon />
-                        <span>Sự cố</span>
-                    </Link>
+                        <Link
+                            href="/pages/problem/"
+                            className={`menuMobile-items ${pathname === "/pages/problem/" ? "activeMobieMenu" : ""
+                                } `}
+                        >
+                            <LinkOffOutlinedIcon />
+                            <span>Sự cố</span>
+                        </Link>
 
-                    <div
-
-                        className={`menuMobile-items ${pathname === "/report" ? "activeMobieMenu" : ""
-                            } `}
-                    >
-
-                        <NotificationsNoneOutlinedIcon />
-
-                        <span className="title">
-                            Thông báo
-
-                        </span>
-
-                        <div className="subMenuMobile">
-                            {/* <SubMenu /> */}
+                        <div
+                            className={`menuMobile-items ${pathname === "/report" ? "activeMobieMenu" : ""
+                                } `}
+                        >
+                            <LocalGroceryStoreOutlinedIcon />
+                            <span className="title">
+                                Chợ
+                            </span>
+                            <div className="subMenuMobile">
+                                {/* <SubMenu /> */}
+                            </div>
                         </div>
-
-
                     </div>
+                    :
+                    <div className="menuMobile-list">
+                        <Link
+                            href="/"
+                            className={`menuMobile-items ${pathname === "/" ? "activeMobieMenu" : ""
+                                } `}
+                        >
+                            <TextSnippetOutlinedIcon />
+                            <span>Phiếu cọc</span>
+                        </Link>
 
-
-                </div>
+                        <Link
+                            href="/pages/contactModel/"
+                            className={`menuMobile-items ${pathname === "/pages/contactModel/" ? "activeMobieMenu" : ""
+                                } `}
+                        >
+                            <FileOpenOutlinedIcon />
+                            <span>Mẫu hợp đồng thuê</span>
+                        </Link>
+                    </div>}
             </div>
         </div>
     );

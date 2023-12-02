@@ -32,10 +32,12 @@ const DialogChooseRoom = ({ open, close, apiRoom }: DialogChooseRoomProps) => {
 
 
     }
-
+    
+    
 
     if (data != undefined) {
         localStorage.setItem("userData", JSON.stringify(data));
+        console.log('data from choose', data);
         window.location.href = "/";
     }
 
@@ -81,7 +83,7 @@ const DialogChooseRoom = ({ open, close, apiRoom }: DialogChooseRoomProps) => {
 
         >
             <DialogTitle sx={{ m: 0, padding: " 10px 11px", color: "#fff", background: "#15a35e" }} id="customized-dialog-title">
-                Chọn phòng
+                Chọn sản phẩm
             </DialogTitle>
             <IconButton
                 aria-label="close"
@@ -98,15 +100,15 @@ const DialogChooseRoom = ({ open, close, apiRoom }: DialogChooseRoomProps) => {
             <DialogContent dividers>
                 <Stack spacing={2}>
                     <Stack>
-                        <Typography sx={{ fontSize: "16px", textAlign: "center" }}>Vui lòng chọn phòng muốn xem</Typography>
+                        <Typography sx={{ fontSize: "16px", textAlign: "center" }}>Vui lòng chọn sản phẩm</Typography>
                     </Stack>
                     {apiRoom && apiRoom.map((item) => {
                         return (
                             <Stack key={item.id} alignItems='center' justifyContent='center'>
                                 <Button variant='contained' sx={styleBtn} onClick={() => handleChooseRoom(item)}>
                                     <Stack  padding="5px">
-                                        <Typography sx={{ textAlign: "center", fontSize: "12px" }}>loại hợp đồng: {item.tinh_trang_hop_dong}</Typography>
-                                        <Typography sx={{ textAlign: "center", fontSize: "12px" }}>{item.phong.loai} - {item.phong.ten}</Typography>
+                                        {/* <Typography sx={{ textAlign: "center", fontSize: "12px" }}>loại hợp đồng: {item.tinh_trang_hop_dong}</Typography> */}
+                                        <Typography sx={{ textAlign: "center", fontSize: "16px", fontWeight: "bold" }}>{item.phong.loai} - {item.phong.ten}</Typography>
                                         <Typography sx={{ textAlign: "center", fontSize: "12px" }}>Địa chỉ: {item.phong.nha.dia_chi}</Typography>
                                     </Stack>
                                 </Button>

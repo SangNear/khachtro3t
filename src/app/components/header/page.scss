@@ -380,12 +380,15 @@
                             background: rgba(58, 53, 65, 0.04) !important;
                         }
                     }
+                    @media (max-width: 768px) {
+                        top: 4px;
+                    }
                 }
 
                 .menu-user::after {
                     content: "";
                     position: absolute;
-                    right: 0;
+                    right: 5px;
                     width: 43px;
                     height: 51px;
                     // background-color: #9155fd;
