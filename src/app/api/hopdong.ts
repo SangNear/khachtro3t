@@ -274,5 +274,8 @@ interface ApiHopdongResponse {
   data: {
     hopDong: HopDong;
     allKhachHD: KhachHang[];
+    tienThangDau: number,
+    tongDaDua: number,
+    tongThanhToan: number
   };
 }

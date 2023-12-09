@@ -8,7 +8,6 @@ import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import LocalHotelIcon from '@mui/icons-material/LocalHotel';
 import logo from "../../../../public/assets/img/logo3t.png";
 import Link from "next/link";
-import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
 import { redirect, usePathname } from "next/navigation";
 import avatar from "../../../../public/assets/img/1.png";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -17,27 +16,20 @@ import Paper from "@mui/material/Paper";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
-
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import FileOpenOutlinedIcon from '@mui/icons-material/FileOpenOutlined';
-import LinkOffOutlinedIcon from '@mui/icons-material/LinkOffOutlined';
 import { DataApi, Datalogin, HopDong, KhachHangHopDong } from "@/app/api/login";
 import Loading from "@/app/loading";
 
 
 
 
-const HeaderComponent = () => {
+const HeaderComponent2 = () => {
     const pathname = usePathname();
-
-
     const [dataSession, setDataSession] = useState<ApiHopdongResponse>()
     const [dataUser, setDataUser] = useState<KhachHangHopDong>()
     const [dataHopdong, setDataHopdong] = useState<HopDong>()
-
     const [isLoading, setIsLoading] = useState(true);
-
-
     const fetchData = async () => {
         try {
             const userApi = window.localStorage.getItem('userData');
@@ -60,9 +52,6 @@ const HeaderComponent = () => {
                 const data: ApiHopdongResponse = await response.json();
                 setDataSession(data);
 
-
-
-
             }
         } catch (error) {
 
@@ -81,7 +70,7 @@ const HeaderComponent = () => {
 
 
                 if (userData.id == item.id_hop_dong) {
-                    
+                    console.log("item", item);
                     setIsLoading(false)
                     setDataUser(item)
 
@@ -98,7 +87,6 @@ const HeaderComponent = () => {
 
         }
     }, []);
-
 
 
 
@@ -119,10 +107,7 @@ const HeaderComponent = () => {
     //     return null; // hoặc có thể return một phần tử UI tương ứng với trạng thái loading hoặc không có dữ liệu
     // }
 
-    // if (isLoading) {
-    //     // Render a loading indicator or any other UI while waiting for data
-    //     return '';
-    // }
+
 
     return (
         <div className="header-container">
@@ -130,7 +115,7 @@ const HeaderComponent = () => {
                 <div className="left">
 
                     <div style={{ width: 'auto' }} className="logo-container">
-                        <Image src={logo} alt="logo" className="logo" height={50} />
+                        <Image src={logo} alt="logo" priority={true} className="logo" height={50} />
                     </div>
                 </div>
                 <div className="menu-container">
@@ -142,135 +127,28 @@ const HeaderComponent = () => {
                                     }`}
 
                             >
-                                Hóa đơn
+                                Phiếu cọc
                             </div>
                         </Link>
 
                         <Link
-                            href="/pages/contact/" className={`menu-items ${pathname === "/pages/contact/" ? "active" : ""}`}
+                            href="/pages/contactModel/" className={`menu-items ${pathname === "/pages/contactModel/" ? "active" : ""}`}
                         >
                             <FileOpenOutlinedIcon className="icon" />
                             <div
-                                className={`menu__item-link ${pathname === "/pages/contact/" ? "active" : ""
+                                className={`menu__item-link ${pathname === "/pages/contactModel/" ? "active" : ""
                                     }`}
 
                             >
-                                Hợp đồng
+                                Mẫu hợp đồng thuê
                             </div>
                         </Link>
-
-                        <Link
-                            href="/pages/problem/" className={`menu-items ${pathname === "/pages/problem/" ? "active" : ""}`}
-                        >
-                            <LinkOffOutlinedIcon className="icon" />
-                            <div
-                                className={`menu__item-link ${pathname === "/pages/problem/" ? "active" : ""
-                                    }`}
-
-                            >
-                                Sự cố
-                            </div>
-                        </Link>
-
-                        <Link
-                            href="#" className={`menu-items ${pathname === "/guestReport/" || pathname === "/income/"
-                                ? "active"
-                                : ""
-                                }`}
-                        >
-                            <LocalGroceryStoreOutlinedIcon className="icon" />
-                            <div
-                                className={`menu__item-link ${pathname === "/guestReport/" || "/income/" ? "active" : ""
-                                    }`}
-
-                            >
-                                Chợ
-                            </div>
-
-                        </Link>
-
-
 
                     </div>
                 </div>
 
                 <div className="right-container">
                     <div className="right-items">
-                        {/* <div className="search-cotainer">
-
-                            <Modal
-                                open={openSearchInput}
-                                onClose={handleCloseSearchInput}
-                                aria-labelledby="modal-modal-title"
-                                aria-describedby="modal-modal-description"
-                                className="ModalSearch"
-                                sx={{ padding: "35px" }}
-                            >
-                                <Box sx={styleInputSearch}>
-                                    <TabContext value={value}>
-                                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                            <TabList onChange={handleChange} aria-label="lab API tabs example" sx={{
-                                                '& .MuiTabs-indicator': {
-                                                    backgroundColor: 'rgb(128, 75, 223)',
-                                                },
-                                            }}>
-                                                <Tab label="Cục bộ" value="1" style={{ color: "rgb(128, 75, 223)" }} />
-                                                <Tab label="Khách" value="2" style={{ color: "rgb(128, 75, 223)" }} />
-
-                                            </TabList>
-                                        </Box>
-                                        <TabPanel value="1">
-                                            <TextField
-                                                id="outlined-basic"
-                                                label="cục bộ"
-                                                variant="outlined"
-                                                className="textField-container"
-                                                sx={textfield}
-                                                fullWidth
-
-                                            />
-                                            <IconButton
-                                                aria-label="delete"
-                                                size="small"
-                                                sx={{
-                                                    position: "absolute",
-                                                    fontSize: "25px",
-                                                    right: "11%",
-                                                    top: "54%"
-                                                }}
-                                            >
-                                                <SearchIcon fontSize="inherit" />
-                                            </IconButton>
-                                        </TabPanel>
-                                        <TabPanel value="2">
-                                            <TextField
-                                                id="outlined-basic"
-                                                label="Tìm kiếm khách"
-                                                variant="outlined"
-                                                className="textField-container"
-                                                sx={textfield}
-                                                fullWidth
-
-                                            />
-                                            <IconButton
-                                                aria-label="delete"
-                                                size="small"
-                                                sx={{
-                                                    position: "absolute",
-                                                    fontSize: "25px",
-                                                    right: "11%",
-                                                    top: "54%"
-                                                }}
-                                            >
-                                                <SearchIcon fontSize="inherit" />
-                                            </IconButton>
-                                        </TabPanel>
-
-                                    </TabContext>
-
-                                </Box>
-                            </Modal>
-                        </div> */}
                         <div className="menu-user">
                             <PersonOutlineOutlinedIcon
                                 sx={{ fontSize: "25px", color: "#fff", cursor: "pointer" }}
@@ -363,7 +241,6 @@ const HeaderComponent = () => {
 
 
             <div className="menuMobile-container">
-
                 <div className="menuMobile-list">
                     <Link
                         href="/"
@@ -371,44 +248,21 @@ const HeaderComponent = () => {
                             } `}
                     >
                         <TextSnippetOutlinedIcon />
-                        <span>Hóa đơn</span>
+                        <span>Phiếu cọc</span>
                     </Link>
 
                     <Link
-                        href="/pages/contact/"
-                        className={`menuMobile-items ${pathname === "/pages/contact/" ? "activeMobieMenu" : ""
+                        href="/pages/contactModel/"
+                        className={`menuMobile-items ${pathname === "/pages/contactModel/" ? "activeMobieMenu" : ""
                             } `}
                     >
                         <FileOpenOutlinedIcon />
-                        <span>Hợp đồng</span>
+                        <span>Mẫu hợp đồng thuê</span>
                     </Link>
-
-                    <Link
-                        href="/pages/problem/"
-                        className={`menuMobile-items ${pathname === "/pages/problem/" ? "activeMobieMenu" : ""
-                            } `}
-                    >
-                        <LinkOffOutlinedIcon />
-                        <span>Sự cố</span>
-                    </Link>
-
-                    <div
-                        className={`menuMobile-items ${pathname === "/report" ? "activeMobieMenu" : ""
-                            } `}
-                    >
-                        <LocalGroceryStoreOutlinedIcon />
-                        <span className="title">
-                            Chợ
-                        </span>
-                        <div className="subMenuMobile">
-                            {/* <SubMenu /> */}
-                        </div>
-                    </div>
                 </div>
-
             </div>
         </div>
     );
 };
 
-export default HeaderComponent;
+export default HeaderComponent2;

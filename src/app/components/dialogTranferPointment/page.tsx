@@ -25,7 +25,7 @@ interface DialogProblemProps {
 
 }
 
-const DialogTransfer = ({ open, close }: DialogProblemProps) => {
+const DialogTransferPointment = ({ open, close }: DialogProblemProps) => {
     
 
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -106,7 +106,7 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
 
         >
             <DialogTitle sx={{ m: 0, padding: " 10px 11px", color: "#fff", background: "#15a35e" }} id="customized-dialog-title">
-                Báo chuyển khoản
+                Hẹn thanh toán
             </DialogTitle>
             <IconButton
                 aria-label="close"
@@ -121,6 +121,7 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                 <CloseIcon />
             </IconButton>
             <DialogContent dividers>
+                
                 <Stack>
                     <Stack>
                         <Typography sx={{ color: "#15a35e", fontSize: "18px", fontWeight: "600", textAlign: "center" }}>QX11</Typography>
@@ -160,7 +161,8 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                     </Stack>
                 </Stack>
             </DialogContent>
-            
+
+
             <DialogActions sx={styleDialogAction}>
                 <Button
 
@@ -180,4 +182,4 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
     )
 }
 
-export default DialogTransfer
+export default DialogTransferPointment

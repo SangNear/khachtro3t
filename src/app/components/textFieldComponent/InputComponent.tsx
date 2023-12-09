@@ -14,9 +14,10 @@ interface InputComponentProps {
     multiline?: boolean
     align?: TextAlign
     type?: string
+    onkeydown? : any
 
 }
-const InputComponent = ({ data, label, onchange, variant, size, multiline, align, type }: InputComponentProps) => {
+const InputComponent = ({ data, label, onchange, variant, size, multiline, align, type,onkeydown }: InputComponentProps) => {
 
     const textfield = {
         // maxHeight: "30px",
@@ -83,6 +84,7 @@ const InputComponent = ({ data, label, onchange, variant, size, multiline, align
                 onChange={onchange}
                 fullWidth
                 sx={textfield}
+                onKeyDown={onkeydown}
                 inputProps={{
                     style: {
                         fontSize: "1.5rem",

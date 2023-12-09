@@ -16,9 +16,12 @@ import { DataApi } from '@/app/api/login'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
 
+
 const Login = () => {
   
+
   useEffect(() => {
+    
     // Xóa dữ liệu từ localStorage khi vào trang Login
     localStorage.clear();
   }, []);
@@ -40,8 +43,18 @@ const Login = () => {
   }
   console.log("apirooom:", apiRoom);
 
+  const handleKeyPressEnter = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    // Kiểm tra nếu phím được nhấn là phím Enter (keyCode 13)
+    
+    if (event.key === 'Enter') {
+      handleLogin(event)
+
+
+    }
+  };
+
   const handleLogin = async (event: FormEvent) => {
-    event.preventDefault();
+
 
     try {
       const response = await fetch(
@@ -58,8 +71,11 @@ const Login = () => {
       )
 
       const dataApiLogin = await response.json();
-      const sophong = dataApiLogin.data ? dataApiLogin.data.length : 0;
-      
+      console.log("dataApiLogin", dataApiLogin);
+
+
+      const sophong = dataApiLogin.data ? dataApiLogin.data.allHopDong.length : 0;
+
 
       if (dataApiLogin.status == 'false') {
         setErrors(dataApiLogin.message)
@@ -76,16 +92,15 @@ const Login = () => {
         //kiểm tra xem sdt này có bao nhiêu phòng nếu phòng bằng 1
         // thì chuyển tới trang chủ luôn còn khác 1 thì sẽ có lựa chọn phòng
         if (sophong == 1) {
-          localStorage.setItem("userData", JSON.stringify(dataApiLogin.data[0]));
-          console.log("dataApiLogin.data-coc", dataApiLogin.data[0]);
+          localStorage.setItem("userData", JSON.stringify(dataApiLogin.data.allHopDong[0]));
+          localStorage.setItem("loginData", JSON.stringify(dataApiLogin))
 
           window.location.href = "/";
         }
-
         else {
           setOpenChooseRoom(!openChooseRoom)
-          setApiRoom(dataApiLogin.data)
-
+          setApiRoom(dataApiLogin.data.allHopDong)
+          localStorage.setItem("loginData", JSON.stringify(dataApiLogin))
         }
       }
 
@@ -103,7 +118,7 @@ const Login = () => {
     setCapcha(val);
   };
 
- 
+
 
   return (
     <div className='login-container'>
@@ -112,7 +127,7 @@ const Login = () => {
           <Image src={loginLogo} alt='logo' />
         </div>
         <div className="login-input">
-          <InputComponent variant='outlined' label='Số điện thoại' type='tel' onchange={HandleChangePhone} data={phone} />
+          <InputComponent variant='outlined' label='Số điện thoại' type='tel' onchange={HandleChangePhone} data={phone} onkeydown={handleKeyPressEnter}/>
           <PhoneAndroidIcon className='login-input--icon' />
         </div>
 
@@ -139,13 +154,16 @@ const Login = () => {
             </Button>
             :
             <Button
+              
               variant="contained"
               className="login-btn--item"
               onClick={handleLogin}
+              
+
 
             >
               <PowerSettingsNewIcon />
-              <span>Đăng nhập</span>
+              Đăng nhập
             </Button>}
 
         </div>

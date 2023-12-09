@@ -27,20 +27,20 @@ const Footer = () => {
                         <h2 className="footer-title">thông tin</h2>
                         <div className="info">
                             <BorderColorIcon className="icon" />
-                            <Link href="pages/introduce">
+                            <Link href="#">
                                 <span>Giới thiệu</span>
                             </Link>
 
                         </div>
                         <div className="info">
                             <LocalLibraryIcon className="icon" />
-                            <Link href="pages/sampleContact">
+                            <Link href="#">
                                 <span>Hợp đồng mẫu</span>
                             </Link>
                         </div>
                         <div className="info">
                             <SettingsIcon className="icon" />
-                            <Link href="pages/operating">
+                            <Link href="#">
                                 <span>Quy trình vận hành</span>
                             </Link>
 
@@ -54,7 +54,7 @@ const Footer = () => {
                         </div>
                         <div className="info">
                             <HomeIcon className="icon" />
-                            <Link href="pages/hire">
+                            <Link href="#">
                                 <span>Cho thuê phòng</span>
                             </Link>
 

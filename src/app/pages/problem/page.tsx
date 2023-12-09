@@ -1,18 +1,17 @@
 "use client"
-import ContainerComponent2 from '@/app/components/wrappComponent2/page'
-import React, { ChangeEvent, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './page.scss'
-
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import DialogProblem from '@/app/components/dialogProblem/page'
-
-import MenuItem from '@mui/material/MenuItem'
-import SelectComponent from '@/app/components/textFieldComponent/SelectComponent'
-import TextareaComponent from '@/app/components/textFieldComponent/Textarea'
+import ContainerComponent from '@/app/components/wrappComponent/page'
+import { ListSucoApi } from '@/app/api/listSuco'
 const ProblemPage = () => {
 
+    const [listSuco, setListSuco] = useState<ListSucoApi>()
+    const [id_hop_dong, setIdHopdong] = useState(0)
+    const [sdt_khach, setSdtKhach] = useState('')
     const [openBSC, setOpenBSC] = useState(false)
     const handleOpenDialogBSC = () => {
         setOpenBSC(true)
@@ -22,6 +21,50 @@ const ProblemPage = () => {
     }
 
     const [openreview, setOpenreview] = useState(false)
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const userApi = window.localStorage.getItem('userData');
+            if (!userApi) {
+                // Redirect to login page if local storage is not present
+                // Replace '/login' with your actual login page route
+                window.location.href = '/pages/login';
+            } else {
+                const userData = JSON.parse(userApi)
+                // setHopdongApi(userData)
+
+                let id_hop_dong = userData.id
+                let sdt = userData.phone_gui
+                let sdt_dau = 0
+                const fetchData = async () => {
+                    try {
+                        const response = await fetch("https://ad.tro4u.com/api/version/1.0/congviec2/get-all-su-co-by-hop-dong", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                id_hop_dong
+                            }),
+                            headers: {
+                                "Content-Type": "application/json",
+                            }
+                        });
+                        const datareponst: ListSucoApi = await response.json()
+                        setListSuco(datareponst)
+                        setIdHopdong(id_hop_dong)
+                        setSdtKhach(sdt_dau + sdt)
+
+
+                    } catch (error) {
+
+                    }
+                };
+
+                fetchData();
+                return () => {
+                    fetchData()
+                };
+            }
+        }
+    }, []);
     const btnbsc = {
         backgroundColor: "#DC3545",
         width: 'fit-content',
@@ -31,6 +74,10 @@ const ProblemPage = () => {
         }
 
     }
+    
+    
+
+
     const btndg = {
         backgroundColor: "#28A745",
         '&:hover': {
@@ -51,7 +98,7 @@ const ProblemPage = () => {
 
 
     return (
-        <ContainerComponent2>
+        <ContainerComponent>
             <div className="problem-container">
                 <div className="problem-top">
                     <Stack height='100%' alignItems='center' justifyContent='center'>
@@ -64,48 +111,27 @@ const ProblemPage = () => {
 
                     <Stack direction={{ xs: 'column', md: 'column', lg: 'row' }} spacing={3}>
                         <Stack flex={1} spacing={2} sx={customStack}>
-                            <Stack direction='row' justifyContent='space-between' alignItems='center' >
-                                <Stack>
-                                    <Typography className='fx'><b>Check-in</b> <b style={{ color: "#28A745" }}>(hoàn thành)</b></Typography>
-                                    <Typography className='fx' style={{ fontSize: "14px", textAlign: 'center', fontStyle: "italic" }}>10:26 - 31/10/2023</Typography>
-                                </Stack>
-                                <Stack direction='row' spacing={2}>
-
-                                    <DialogProblem open={openBSC} close={handleCloseDialogBSC} />
-
-
-
-                                    <Button className='fx-btn' variant='contained' sx={btndg}>Đánh giá</Button>
-                                </Stack>
-                            </Stack>
-                            <Stack direction='row' justifyContent='space-between' alignItems='center' >
-                                <Stack>
-                                    <Typography className='fx'><b>Check-in</b> <b style={{ color: "#28A745" }}>(hoàn thành)</b></Typography>
-                                    <Typography className='fx' style={{ fontSize: "14px", textAlign: 'center', fontStyle: "italic" }}>10:26 - 31/10/2023</Typography>
-                                </Stack>
-                                <Stack direction='row' spacing={2}>
-
-                                    
+                            {listSuco && listSuco.data.allSuCo.map((item) => {
+                                return (
+                                    <Stack key={item.id} direction='row' justifyContent='space-between' alignItems='center' >
+                                        <Stack>
+                                            <Typography className='fx'><b>{item.nhom_cv}</b> <b style={{ color: "#28A745" }}>({item.trang_thai})</b></Typography>
+                                            <Typography className='fx' style={{ fontSize: "14px", textAlign: 'left', fontStyle: "italic" }}>{item.mo_ta}</Typography>
+                                            <Typography className='fx' style={{ fontSize: "14px", textAlign: 'left', fontStyle: "italic" }}>10:26 - 31/10/2023</Typography>
+                                        </Stack>
+                                        <Stack direction='row' spacing={2}>
 
 
 
-                                    <Button className='fx-btn' variant='contained' sx={btndg}>Đánh giá</Button>
-                                </Stack>
-                            </Stack>
-                            <Stack direction='row' justifyContent='space-between' alignItems='center' >
-                                <Stack>
-                                    <Typography className='fx'><b>Check-in</b> <b style={{ color: "#28A745" }}>(hoàn thành)</b></Typography>
-                                    <Typography className='fx' style={{ fontSize: "14px", textAlign: 'center', fontStyle: "italic" }}>10:26 - 31/10/2023</Typography>
-                                </Stack>
-                                <Stack direction='row' spacing={2}>
-
-                                    
 
 
+                                            <Button className='fx-btn' variant='contained' sx={btndg}>Đánh giá</Button>
+                                        </Stack>
+                                    </Stack>
+                                )
+                            })}
 
-                                    <Button className='fx-btn' variant='contained' sx={btndg}>Đánh giá</Button>
-                                </Stack>
-                            </Stack>
+
                         </Stack>
 
                         <Stack flex={1}>
@@ -142,8 +168,8 @@ const ProblemPage = () => {
 
             </div>
 
-
-        </ContainerComponent2 >
+            <DialogProblem open={openBSC} close={handleCloseDialogBSC} id_hop_dong={id_hop_dong} sdt_khach={sdt_khach}  />
+        </ContainerComponent >
     )
 }
 

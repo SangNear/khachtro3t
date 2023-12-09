@@ -177,6 +177,7 @@ const DialogBill = ({ open, close, dataMoney }: DialogProblemProps) => {
 
                 </Stack>
             </DialogContent>
+            
             <DialogActions sx={styleDialogAction}>
                 <Button
 

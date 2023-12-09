@@ -1,15 +1,97 @@
 "use client"
-import ContainerComponent2 from '@/app/components/wrappComponent2/page'
 import React, { useEffect, useState } from 'react'
 import "./page.scss"
-import { Divider, Stack, Typography } from '@mui/material'
-import styled from 'styled-components'
 import Loading from '@/app/loading'
-
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Divider from '@mui/material/Divider'
+import InputComponent from '@/app/components/textFieldComponent/InputComponent'
+import OtpInput from "react-otp-input";
+import CircularProgress from '@mui/material/CircularProgress';
+import { OtpResponse, OtpResponseSubmit } from '@/app/api/otp'
 const ContactModelPage = () => {
 
     const [hopdongApi, setHopdongApi] = useState<ApiHopdongResponse>()
+
     const [isLoading, setIsLoading] = useState(true);
+    const [otp, setOtp] = useState("");
+    const [errorsOTP, setErrorsOTP] = useState("")
+    const [otpResponse, setOtpResponse] = useState("");
+    const [isSign, setIsSign] = useState(false)
+    const [id_hop_dong, setIDhopdong] = useState<number>()
+    const [openOpt, setOpenOtp] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const handleOpenOtp = async () => {
+        try {
+            console.log("id hop dong from click", hopdongApi?.data.hopDong.id);
+            let id_hop_dong = hopdongApi?.data.hopDong.id
+            let user_token = '630f72226ad43'
+            const response = await fetch('https://ad.tro4u.com/api/version/1.0/send-otp', {
+                method: "POST",
+                body: JSON.stringify({
+                    user_token,
+                    id_hop_dong
+
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            const dataOtp: OtpResponse = await response.json()
+            console.log("otp send:", dataOtp.data.otp);
+
+            setOtpResponse(dataOtp.data.otp)
+            setOpenOtp(!openOpt)
+            setIDhopdong(id_hop_dong)
+            setLoading(!loading)
+        } catch (error) {
+
+        }
+
+
+    }
+    const handleChangeOtp = () => {
+        // setTimeout(() => {
+        //     setIsSign('2347')
+        // }, 2000)
+        setOtp
+        console.log(otp);
+    }
+    const checkOtp = (otp1: string, otp2: string) => {
+        if (otp1 == otp2) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    const handleSubmitOtp = async () => {
+        if (checkOtp(otp, otpResponse)) {
+            setErrorsOTP("đang kiểm tra otp, vui lòng đợi")
+
+            const response = await fetch("https://ad.tro4u.com/api/version/1.0/hopdong/update-otp-by-hop-dong", {
+                method: "POST",
+                body: JSON.stringify({
+                    id_hop_dong,
+                    otp
+
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            const dataSubmit: OtpResponseSubmit = await response.json()
+
+            if (dataSubmit.status) {
+                window.location.href = "/";
+            }
+        }
+        else {
+            setErrorsOTP("Mã OTP không trùng khớp! Xin thử lại")
+        }
+    };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const userApi = window.localStorage.getItem('userData');
@@ -37,16 +119,25 @@ const ContactModelPage = () => {
                         const data: ApiHopdongResponse = await response.json();
                         setHopdongApi(data)
                         setIsLoading(false)
+                        setIsSign(data.data.hopDong.ngay_xac_nhan)
+
                     } catch (error) {
-                        console.error('Error fetching data:', error);
+                        console.log('Error fetching data:', error);
                     }
                 };
 
+
                 fetchData();
+
             }
         }
     }, []);
-    console.log("api hop dong", hopdongApi);
+
+    console.log("api hop dong", hopdongApi?.data.hopDong.tinh_trang_hop_dong);
+    console.log("id hop dong", id_hop_dong);
+    console.log("ma otp", otp);
+
+
 
     const dinhDangNgayThang = (chuoiNgayThang?: string) => {
         // Chuyển đổi thành đối tượng Date
@@ -70,18 +161,46 @@ const ContactModelPage = () => {
         if (so) {
             // Sử dụng toLocaleString để định dạng số
             var chuoiDinhDang = Number(so).toLocaleString('vi-VN');
-
             return chuoiDinhDang;
         }
 
     }
-    // Gọi hàm async trong useEffect
 
-    // Đối với trường hợp này, không có dependency array, nghĩa là hàm fetchData sẽ chạy mỗi khi component được render lại.
 
     if (isLoading) {
         // Render a loading indicator or any other UI while waiting for data
         return <Loading />;
+    }
+    const btnNotSign = {
+        backgroundColor: '#15a35e',
+        "&:hover ": {
+            
+
+            backgroundColor: '#15a35e',
+            opacity: "0.6",
+            span: {
+
+            }
+        }
+    }
+    const inputOtp = {
+        width: 40,
+        height: 40,
+        border: "1px solid #15a35e",
+        borderRadius: "5px",
+        '&:focusVisible': {
+            outline: "none !important"
+        }
+    }
+    const btnSubmitOtp = {
+        whiteSpace: 'nowrap',
+        fontSize: '12px',
+        border: '1px solid #15a35e',
+        color: '#15a35e',
+        '&:hover ': {
+            border: '1px solid #15a35e',
+            opacity: 0.8
+        }
     }
     return (
 
@@ -251,20 +370,20 @@ const ContactModelPage = () => {
 
 
                     <Stack direction='row' spacing={2} justifyContent='center'>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền tháng đầu:	 </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>3.830.000</b></Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền tháng đầu: </Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>{dinhDangSo(hopdongApi?.data.tienThangDau)}</b></Typography>
                     </Stack>
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền đặt cọc: </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: 'blue' }}>3.500.000</b></Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: 'blue' }}>{dinhDangSo(hopdongApi?.data.hopDong.tien_coc)}</b></Typography>
                     </Stack>
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Trừ tiền đã đưa: </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: '#fd06ff' }}>-3.500.000</b></Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: '#fd06ff' }}>Chưa xác định </b></Typography>
                     </Stack>
                     <Stack direction='row' spacing={2} justifyContent='center' style={{ backgroundColor: "yellow" }}>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tổng thanh toán: </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: 'red' }}>3.830.000</b></Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b style={{ color: 'red' }}>Chưa xác định</b></Typography>
                     </Stack>
 
                 </Stack>
@@ -277,9 +396,96 @@ const ContactModelPage = () => {
             </div>
             <div className="contact-container--bottom">
                 <Typography className='fontsize-mobile--tile' style={{ textAlign: "center", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Tình trạng hợp đồng</Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", marginBottom: "24px", color: "#15a35e" }}>ĐÃ KÝ</Typography>
+                {hopdongApi && hopdongApi.data.hopDong.tinh_trang_hop_dong === 'Giữ chỗ' ?
+                    <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", marginBottom: "24px", color: "red" }}>Chờ ký</Typography>
+                    :
+                    !openOpt ?
+                        <Stack alignItems='center'>
+                            <Button variant="contained" sx={btnNotSign}><span style={{ textTransform: "none", display: 'flex', flexDirection: 'column' }} onClick={handleOpenOtp}>Tôi đã đọc và đồng ý <span>Ký hợp đồng</span></span></Button>
+                        </Stack>
+                        :
+                        <Stack spacing={2}>
+                            <Typography sx={{ textAlign: 'center', color: '#15a35e' }}>Mã xác thực sẽ được gửi qua Zalo của bạn</Typography>
+                            <Stack marginBottom='24px' spacing={2} alignItems='center' justifyContent='center' direction='row'>
+                                <OtpInput
+                                    shouldAutoFocus
+                                    value={otp}
+                                    inputType="tel"
+                                    onChange={setOtp}
+                                    numInputs={4}
+                                    renderSeparator={"-"}
+                                    renderInput={(props) => <input {...props} />}
+                                    containerStyle={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                    inputStyle={inputOtp}
+                                />
+                                {otp.length < 4 ?
+                                    <Button variant='outlined' sx={btnSubmitOtp} disabled>Xác nhận otp</Button>
+                                    :
+                                    <Button variant='outlined' sx={btnSubmitOtp} onClick={handleSubmitOtp}>Xác nhận otp</Button>
+                                }
 
-                <Stack direction='column' spacing={1} marginBottom="24px">
+                            </Stack>
+                            {errorsOTP ?
+                                <Stack direction='row' alignContent='center ' justifyContent='center'>
+                                    <Typography sx={{ textAlign: 'center', marginTop: '5px !important', fontStyle: 'italic', color: 'red' }}> {errorsOTP}</Typography>
+
+                                </Stack>
+
+                                :
+                                ''
+                            }
+                        </Stack>
+                    // !openOpt ?
+                    //     <Stack alignItems='center'>
+                    //         <Button variant="outlined" sx={btnNotSign}><span style={{ textTransform: "none" }} onClick={handleOpenOtp}>Chờ ký</span></Button>
+                    //     </Stack>
+                    //     :
+                    //     <Stack spacing={2}>
+                    //         <Typography sx={{ textAlign: 'center', color: '#15a35e' }}>Mã xác thực sẽ được gửi qua Zalo của bạn</Typography>
+                    //         <Stack marginBottom='16px' spacing={2} alignItems='center' justifyContent='center' direction='row'>
+                    //             <OtpInput
+                    //                 shouldAutoFocus
+                    //                 value={otp}
+                    //                 inputType="tel"
+                    //                 onChange={setOtp}
+                    //                 numInputs={4}
+                    //                 renderSeparator={"-"}
+                    //                 renderInput={(props) => <input {...props} />}
+                    //                 containerStyle={{
+                    //                     display: "flex",
+                    //                     justifyContent: "space-between",
+                    //                 }}
+                    //                 inputStyle={inputOtp}
+                    //             />
+                    //             {otp.length < 4 ?
+                    //                 <Button variant='outlined' sx={btnSubmitOtp} disabled>Xác nhận otp</Button>
+                    //                 :
+                    //                 <Button variant='outlined' sx={btnSubmitOtp} onClick={handleSubmitOtp}>Xác nhận otp</Button>
+                    //             }
+
+                    //         </Stack>
+                    //         {errorsOTP ?
+                    //             <Stack direction='row' alignContent='center ' justifyContent='center'>
+                    //                 <Typography sx={{ textAlign: 'center', marginTop: '5px !important', fontStyle: 'italic', color: 'red' }}> {errorsOTP}</Typography>
+
+                    //             </Stack>
+
+                    //             :
+                    //             ''
+                    //         }
+
+                    //     </Stack>
+
+
+
+
+                }
+
+
+                <Stack direction='column' spacing={1} marginBottom="24px" marginTop='24px'>
                     <Stack direction='row' spacing={1} justifyContent='left'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "16px", }}>Người Sale: </Typography>
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "16px", }}><b>Hằng NT</b></Typography>

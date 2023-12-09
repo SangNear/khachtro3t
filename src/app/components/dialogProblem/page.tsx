@@ -18,19 +18,23 @@ import Image from 'next/image'
 import img from "../../../../public/assets/img/5.jpg"
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import "./page.scss"
+import { SubmitSucoReponse } from '@/app/api/submitSuco'
+
 interface DialogProblemProps {
     open: boolean
     close: () => void
-
+    id_hop_dong?: number
+    sdt_khach?: string
 }
 
-const DialogProblem = ({ open, close }: DialogProblemProps) => {
-    const [loaisuco, setLoaisuco] = useState('điện')
+const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemProps) => {
+
+    const [nhom, setLoaisuco] = useState('')
     const handleChangeLoaisuco = (event: ChangeEvent<HTMLInputElement>) => {
         setLoaisuco(event.target.value)
     }
 
-    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const [all_hinh_cong_viec_base64, setSelectedImages] = useState<File[]>([]);
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = e.target.files;
@@ -41,6 +45,89 @@ const DialogProblem = ({ open, close }: DialogProblemProps) => {
             setSelectedImages(prevImages => [...prevImages, ...fileArray]);
         }
     };
+
+    const [mo_ta, setMota] = useState('')
+    const handleChangeMota = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        if (event && event.target) {
+            setMota(event.target.value);
+        }
+    }
+
+    const [thoi_gian_co_nha, setGiotrongngay] = useState<string[]>([]);
+
+    const handleCheckboxChange = (value: string) => {
+        const updatedCheckedItems = [...thoi_gian_co_nha];
+
+        if (updatedCheckedItems.includes(value)) {
+            // If the value is already in the array, remove it
+            const index = updatedCheckedItems.indexOf(value);
+            updatedCheckedItems.splice(index, 1);
+        } else {
+            // If the value is not in the array, add it
+            updatedCheckedItems.push(value);
+        }
+
+        setGiotrongngay(updatedCheckedItems);
+    };
+
+
+    const [ngay_co_nha, setNgaytrongtuan] = useState<string[]>([]);
+
+    const handleNgayTrongTuanChange = (value: string) => {
+        const updatedCheckedItems = [...ngay_co_nha];
+
+        if (updatedCheckedItems.includes(value)) {
+            // If the value is already in the array, remove it
+            const index = updatedCheckedItems.indexOf(value);
+            updatedCheckedItems.splice(index, 1);
+        } else {
+            // If the value is not in the array, add it
+            updatedCheckedItems.push(value);
+        }
+
+        setNgaytrongtuan(updatedCheckedItems);
+    };
+
+
+
+    const handleSubmitProlem = async () => {
+        try {
+            const reponse = await fetch('https://ad.tro4u.com/api/version/1.0/congviec2/bao-su-co', {
+                method: "POST",
+                body: JSON.stringify({
+                    id_hop_dong,
+                    sdt_khach,
+                    thoi_gian_co_nha,
+                    ngay_co_nha,
+                    mo_ta,
+                    nhom,
+                    all_hinh_cong_viec_base64
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+
+            const reponseSucoSubmit: SubmitSucoReponse = await reponse.json()
+            console.log("reponsse", reponseSucoSubmit);
+            window.location.reload();
+
+
+        } catch (error) {
+            close()
+        }
+
+        console.log({
+            id_hop_dong,
+            sdt_khach,
+            thoi_gian_co_nha,
+            ngay_co_nha,
+            mo_ta,
+            nhom,
+            all_hinh_cong_viec_base64
+        });
+    }
+
     const styleDialogCustom = {
         padding: '5px',
         '.MuiDialog-container': {
@@ -108,6 +195,7 @@ const DialogProblem = ({ open, close }: DialogProblemProps) => {
             scroll='body'
 
         >
+
             <DialogTitle sx={{ m: 0, padding: " 10px 11px", color: "#fff", background: "#15a35e" }} id="customized-dialog-title">
                 BÁO SỰ CỐ
             </DialogTitle>
@@ -127,22 +215,22 @@ const DialogProblem = ({ open, close }: DialogProblemProps) => {
                 <Stack direction='column' spacing={2}>
                     <Stack>
                         <SelectComponent
-                            value={loaisuco}
+                            value={nhom}
                             label='Loại sự cố'
                             variant='outlined'
                             onchange={handleChangeLoaisuco}
                         >
-                            <MenuItem value={'điện'}>Điện</MenuItem>
-                            <MenuItem value={'nước'}>Nước</MenuItem>
+                            <MenuItem value={'dien'}>Điện</MenuItem>
+                            <MenuItem value={'nuoc'}>Nước</MenuItem>
                             <MenuItem value={'net'}>Net</MenuItem>
-                            <MenuItem value={'khóa'}>Khóa vân tay</MenuItem>
-                            <MenuItem value={'máy'}>Máy lạnh/Tủ lạnh</MenuItem>
-                            <MenuItem value={'khác'}>Khác</MenuItem>
+                            <MenuItem value={'khoa_van_tay'}>Khóa vân tay</MenuItem>
+                            <MenuItem value={'may_lanh_tu_lanh'}>Máy lạnh/Tủ lạnh</MenuItem>
+                            <MenuItem value={'khac'}>Khác</MenuItem>
                         </SelectComponent>
                     </Stack>
 
                     <Stack>
-                        <textarea placeholder='Mô tả sự cố' className='form-control'></textarea>
+                        <textarea onChange={handleChangeMota} placeholder='Mô tả sự cố' className='form-control'></textarea>
                     </Stack>
 
                     <Stack direction={{ xs: 'row', sm: 'row', lg: 'row' }} spacing={2}>
@@ -150,23 +238,89 @@ const DialogProblem = ({ open, close }: DialogProblemProps) => {
                         <Stack flex={1}>
                             <Typography style={{ whiteSpace: 'nowrap', fontSize: '14px', fontWeight: 'bold', color: '#15a35e' }}>Thời gian bạn có nhà</Typography>
                             <Stack>
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Buổi sáng" />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Buổi trưa" />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Buổi chiều" />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Buổi tối" />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={thoi_gian_co_nha.includes('Buổi sáng')}
+                                        onChange={() => handleCheckboxChange('Buổi sáng')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Buổi sáng" />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={thoi_gian_co_nha.includes('Buổi trưa')}
+                                        onChange={() => handleCheckboxChange('Buổi trưa')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Buổi trưa" />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={thoi_gian_co_nha.includes('Buổi chiều')}
+                                        onChange={() => handleCheckboxChange('Buổi chiều')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Buổi chiều" />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={thoi_gian_co_nha.includes('Buổi tối')}
+                                        onChange={() => handleCheckboxChange('Buổi tối')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Buổi tối" />
                             </Stack>
                         </Stack>
 
                         <Stack flex={1}>
                             <Typography style={{ whiteSpace: 'nowrap', fontSize: '14px', textAlign: 'right', fontWeight: 'bold', color: '#15a35e' }}>Ngày bạn có nhà</Typography>
                             <Stack>
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Thứ 2" labelPlacement='start' />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Thứ 3" labelPlacement='start' />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Thứ 4" labelPlacement='start' />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Thứ 5" labelPlacement='start' />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Thứ 6" labelPlacement='start' />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Thứ 7" labelPlacement='start' />
-                                <FormControlLabel sx={{ color: "black" }} control={<Checkbox sx={{ '&.Mui-checked': { color: '#15a35e' } }} />} label="Chủ nhật có phụ phí ngoài giờ" labelPlacement='start' style={{ marginLeft: '-109px' }} />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Thứ 2')}
+                                        onChange={() => handleNgayTrongTuanChange('Thứ 2')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Thứ 2" labelPlacement='start' />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Thứ 3')}
+                                        onChange={() => handleNgayTrongTuanChange('Thứ 3')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Thứ 3" labelPlacement='start' />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Thứ 4')}
+                                        onChange={() => handleNgayTrongTuanChange('Thứ 4')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Thứ 4" labelPlacement='start' />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Thứ 5')}
+                                        onChange={() => handleNgayTrongTuanChange('Thứ 5')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Thứ 5" labelPlacement='start' />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Thứ 6')}
+                                        onChange={() => handleNgayTrongTuanChange('Thứ 6')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Thứ 6" labelPlacement='start' />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Thứ 7')}
+                                        onChange={() => handleNgayTrongTuanChange('Thứ 7')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Thứ 7" labelPlacement='start' />
+                                <FormControlLabel sx={{ color: "black" }} control={
+                                    <Checkbox
+                                        checked={ngay_co_nha.includes('Chủ nhật')}
+                                        onChange={() => handleNgayTrongTuanChange('Chủ nhật')}
+                                        sx={{ '&.Mui-checked': { color: '#15a35e' } }}
+                                    />
+                                } label="Chủ nhật có phụ phí ngoài giờ" labelPlacement='start' style={{ marginLeft: '-109px' }} />
                             </Stack>
                         </Stack>
 
@@ -176,8 +330,8 @@ const DialogProblem = ({ open, close }: DialogProblemProps) => {
                         <input style={input} type='file' id='file' onChange={handleFileChange} />
                         <label style={label} className='label' htmlFor="file"><CameraAltIcon /></label>
                         <Stack direction='row' spacing={2}>
-                            {selectedImages.length > 0 ? (
-                                selectedImages.map((file, index) => (
+                            {all_hinh_cong_viec_base64.length > 0 ? (
+                                all_hinh_cong_viec_base64.map((file, index) => (
                                     <Image key={index} src={URL.createObjectURL(file)} alt={`selected-${index}`} width={80} height={80} style={{ borderRadius: '6px' }} />
                                 ))
                             ) : ''}
@@ -198,7 +352,7 @@ const DialogProblem = ({ open, close }: DialogProblemProps) => {
                 <Button
                     style={{
                         background: "#15a35e"
-                    }} variant="contained" autoFocus onClick={close}>
+                    }} variant="contained" autoFocus onClick={handleSubmitProlem}>
                     Báo
                 </Button>
             </DialogActions>
