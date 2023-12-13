@@ -20,7 +20,7 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import FileOpenOutlinedIcon from '@mui/icons-material/FileOpenOutlined';
 import { DataApi, Datalogin, HopDong, KhachHangHopDong } from "@/app/api/login";
 import Loading from "@/app/loading";
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
 
@@ -150,7 +150,7 @@ const HeaderComponent2 = () => {
                 <div className="right-container">
                     <div className="right-items">
                         <div className="menu-user">
-                            <PersonOutlineOutlinedIcon
+                            <AccountCircleIcon
                                 sx={{ fontSize: "25px", color: "#fff", cursor: "pointer" }}
                             // onClick={handleUserMenu}
                             />

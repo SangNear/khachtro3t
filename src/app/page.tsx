@@ -13,22 +13,27 @@ import DialogTransfer from '@/app/components/dialogTransfer/page'
 import ContainerComponent from './components/wrappComponent/page'
 import ContainerComponent2 from './components/wrappComponent2/page'
 import DialogTransferPointment from './components/dialogTranferPointment/page'
-import { HoadonApi, IHoaDonAllthangData } from './api/hoadon'
-import { CircularProgress, LinearProgress } from '@mui/material'
 
+import { CircularProgress, Divider, LinearProgress } from '@mui/material'
+import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import PriceCheckOutlinedIcon from '@mui/icons-material/PriceCheckOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
+import CurrencyExchangeOutlinedIcon from '@mui/icons-material/CurrencyExchangeOutlined';
 
-
-
+import { ApiHoaDonResponse, ThangData } from './api/hoadon'
 export default function Home() {
   const [openModalBill, setOpenModalBill] = useState(false)
-  const [dataMoney, setDataMoney] = useState<number>(0)
-  const [hoadonApi, setHoadonApi] = useState<HoadonApi>()
-  const [statusHopdong, setStatusHopdong] = useState('')
-  const [chitiethoadonallThang, setChitiethoadonallThang] = useState<IHoaDonResponseArray>()
+  const [dataBill, setdataBill] = useState<ThangData | undefined>()
+  const [hoadonApi, setHoadonApi] = useState<ApiHoaDonResponse>()
+  const [giathue, setGiathue] = useState(0)
 
-  const handleOpenModalBill = (data: number) => {
+
+  const handleOpenModalBill = (data: ThangData) => {
     setOpenModalBill(!openModalBill)
-    setDataMoney(data)
+    setdataBill(data)
   }
 
   const handleCloseModalBill = () => {
@@ -63,20 +68,13 @@ export default function Home() {
     setOpenModalTransferPointment(!openModalTransferPointment)
   }
 
+
+
   useEffect(() => {
 
     if (typeof window !== 'undefined') {
-
-
       const userApi = window.localStorage.getItem('userData');
       const dataLoginApi = localStorage.getItem('loginData')
-      const clearLocalStorage = () => {
-        // Clear localStorage
-        localStorage.clear();
-        // Redirect to login page if local storage is not present
-        window.location.href = '/pages/login';
-      };
-
       if (!userApi) {
         // Redirect to login page if local storage is not present
         // Replace '/login' with your actual login page route
@@ -88,23 +86,40 @@ export default function Home() {
 
         if (dataLoginApi) {
           const dataLogin: Datalogin = JSON.parse(dataLoginApi);
-          setStatusHopdong(userData.tinh_trang_hop_dong)
+
           // console.log("khach", userData.tinh_trang_hop_dong);
           // console.log("hopdong", dataLogin);
         }
 
-        const lastAccessTimestamp = localStorage.getItem('lastAccessTimestamp') || new Date().toDateString();
-        // Check if the current date is different from the stored date
-        const currentDate = new Date().toDateString();
+        let id_hop_dong = userData.id
 
-        if (lastAccessTimestamp !== currentDate) {
-          // If the dates are different, clear localStorage and update the timestamp
-          clearLocalStorage();
-          localStorage.setItem('lastAccessTimestamp', currentDate);
+        const clearLocalStorage = () => {
+          // Clear localStorage
+          localStorage.clear();
+          // Redirect to login page if local storage is not present
+          window.location.href = '/pages/login';
+        };
+
+        const clearLocalStorageIfTimeOut = () => {
+          const storedTimestamp = localStorage.getItem('clearTimestamp');
+          const currentTime = new Date().getTime();
+
+          if (!storedTimestamp) {
+            // Nếu chưa có timestamp, lưu timestamp vào localStorage
+            localStorage.setItem('clearTimestamp', currentTime.toString());
+          } else {
+            // Nếu đã có timestamp, kiểm tra thời gian
+            const storedTime = parseInt(storedTimestamp, 10);
+            const elapsedTime = currentTime - storedTime;
+
+            if (elapsedTime >= 1 * 60 * 60 * 1000) {
+              // Nếu đã qua 2 giờ, xóa dữ liệu và cập nhật timestamp mới
+              clearLocalStorage();
+              localStorage.setItem('clearTimestamp', currentTime.toString());
+            }
+          }
         }
 
-
-        let id_hop_dong = userData.id
         const fetchData = async () => {
           try {
             const response = await fetch("https://ad.tro4u.com/api/version/1.0/hopdong/get-chi-tiet-hop-dong", {
@@ -122,11 +137,13 @@ export default function Home() {
 
             setDataSession(dataApi)
             setIsLoading(false)
+            setGiathue(dataApi.data.hopDong.gia_thue)
           }
           catch (error) {
 
           }
         }
+
         const fetchdataHoadon = async () => {
           try {
             const response = await fetch("https://ad.tro4u.com/api/version/1.0/hoadon/get-all-hoa-don-by-idhd", {
@@ -138,25 +155,31 @@ export default function Home() {
                 "Content-Type": "application/json",
               }
             })
-            const dataHoadon: HoadonApi = await response.json()
+            const dataHoadon: ApiHoaDonResponse = await response.json()
             setHoadonApi(dataHoadon)
 
 
-            const allthangObject = dataHoadon.data.allThang
 
-            if (typeof allthangObject === 'object' && allthangObject !== null) {
-              const result = Object.entries(allthangObject);
-              console.log("result", result);
-              setChitiethoadonallThang(result)
-            } else {
+            // const allthangObject = dataHoadon.data.allThang
+            // console.log("all tháng ", allthangObject);
 
-            }
+
+
+            // if (typeof allthangObject === 'object' && allthangObject !== null) {
+            //   const result: ThangHientai | undefined = convertArrayToObject(Object.entries(allthangObject));
+            //   console.log("result", result);
+            //   setChitiethoadonallThang(result);
+            // } else {
+            //   // Handle the case when allthangObject is not an object or is null
+            // }
 
 
           } catch (error) {
 
           }
         }
+
+        clearLocalStorageIfTimeOut()
         fetchdataHoadon()
         fetchData();
 
@@ -168,6 +191,9 @@ export default function Home() {
 
   }, []);
 
+  console.log("data session", dataSession?.data.hopDong.gia_thue);
+
+
   const styleCircle = {
 
     '.MuiCircularProgress-circle': {
@@ -175,9 +201,74 @@ export default function Home() {
     }
 
   }
+  const styleTimelineText = {
+    fontWeight: 'bold',
+    "@media (max-width: 768px)": {
+      fontSize: '0.8rem'
+    }
+
+  }
+  const styleDividerTimeline = {
+    width: '2px',
+    height: '30px',
+    marginBottom: '-10px',
+
+  }
+  const styleTitleTimeline = {
+    color: "#15a35e",
+    fontWeight: 'bold',
+    fontSize: '20px',
+    textAlign: 'left',
+    marginBottom: '10px',
+    "@media (max-width: 768px)": {
+      fontSize: '15px',
+    }
+  }
+
 
   console.log("api hoa don", hoadonApi);
-  console.log("chi tiet hoa don", chitiethoadonallThang);
+  // console.log("chi tiet hoa don222", chitiethoadonallThang?.filter((items) => items[1].thang.includes(thang.toString())));
+
+
+
+
+  // const thangThuTien = (arr: IHoaDonResponseArray | undefined) => {
+  //   const date = new Date()
+  //   const thang = date.getMonth() + 1
+  //   const nam = date.getFullYear()
+  //   const ngay = date.getDate()
+  //   const thangFormatted = thang.toString().padStart(2, '0');
+  //   let thangs = arr?.filter((items) => items[1].thang.includes(thang.toString()))
+
+  //   console.log("tháng", thangs);
+
+  //   const ngayThangNamFormatted = "12/2023";
+  //   // console.log("ngayfthangnawm", ngayThangNamFormatted);
+  //   // console.log(" tháng ", chitiethoadonallThang?.map(item => item[1].thang));
+
+  //   // const allMonth =  arr?.map((item, index) => item[1].thang.fil)
+  //   // console.log("all thág", allMonth);
+
+
+  //   // if(thangs?.find((items) => items[1].thang == ngayThangNamFormatted))
+  //   //  {
+  //   //   console.log("bằng nhausdsd ->>>> ", thangs[]);
+
+  //   //  }
+  //   //  else {
+  //   //   console.log("khác nhau");
+  //   //  }
+
+
+
+
+
+
+  // }
+  // thangThuTien(chitiethoadonallThang)
+
+
+
   const dinhDangSo = (so?: number) => {
     if (so) {
       // Sử dụng toLocaleString để định dạng số
@@ -186,7 +277,14 @@ export default function Home() {
     }
 
   }
-  console.log("data>>>>>>", dataSession);
+
+  // const dateString = new Date();
+  // const getday= dateString.getDate()
+
+  // // Chuyển đổi chuỗi thành đối tượng Date
+  // const targetDate = new Date(`${dateString}-28T00:00:00Z`);
+  // console.log(getday);
+
 
   if (isLoading) {
     // Render a loading indicator or any other UI while waiting for data
@@ -198,149 +296,31 @@ export default function Home() {
 
 
         <ContainerComponent>
-          <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} width=" 100%" gap='10px'>
+          <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} width=" 100%" gap='20px'>
             <div className="wrapp-container--left">
-              <Stack style={{ padding: "10px 5px" }} spacing={4}>
-                <table style={{ width: "100%" }}>
-                  <thead>
+              <Stack style={{ padding: "10px 5px", height: '100%' }} spacing={4} alignItems='center' justifyContent='center'>
+                {hoadonApi && hoadonApi.data.allThang.map((item) => {
+                  return (
+                    <Stack key={item.thang} direction='column' alignItems='center' justifyContent='center' gap={5}>
+                      <Stack>
+                        <Typography sx={{ fontWeight: '600', color: '#a3a3a3' }}>Hóa đơn tháng {item.thang}</Typography>
+                        <Typography sx={{ textAlign: 'center', fontWeight: 'bold' }}>Tổng tiền: {formatNumber(item.tong_tien)}</Typography>
+                        <span style={{ textAlign: 'center', fontStyle: 'italic', color: '#15a35e', cursor: 'pointer' }} onClick={() => handleOpenModalBill(item)}>Xem chi tiết</span>
+                      </Stack>
 
-                    <tr >
-                      <th style={{ fontSize: "14px", height: "60px", borderRadius: "6px", backgroundColor: "#15a35e", color: "#fff" }}>
-                        CHI PHÍ
-                      </th>
-                      {chitiethoadonallThang ? chitiethoadonallThang && chitiethoadonallThang.map((item) => {
-                        return (
-                          <th key={item[0]} style={{ fontSize: "14px", height: "60px", borderRadius: "6px", backgroundColor: "#15a35e", color: "#fff" }}>
-                            {item[0]}
-                          </th>
-                        )
-                      })
-                        :
-                        <>
-                          <th style={{ fontSize: "14px", height: "60px", borderRadius: "6px", backgroundColor: "#15a35e", color: "#fff" }}>
-                            <CircularProgress sx={styleCircle} size={30} />
-                          </th>
-                          <th style={{ fontSize: "14px", height: "60px", borderRadius: "6px", backgroundColor: "#15a35e", color: "#fff" }}>
-                            <CircularProgress sx={styleCircle} size={30} />
-                          </th>
-                          <th style={{ fontSize: "14px", height: "60px", borderRadius: "6px", backgroundColor: "#15a35e", color: "#fff" }}>
-                            <CircularProgress sx={styleCircle} size={30} />
-                          </th>
-                        </>
+                      <Stack>
+                        <Typography sx={{ fontWeight: '600', color: '#a3a3a3' }}>Tiền đã thanh toán</Typography>
+                        <Typography sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                          {item.hoa_don_thu.length > 0 ? formatNumber(item.hoa_don_thu.reduce((acc, curr) => acc + curr.tong_tien, 0)) : 0}
+                          /
+                          <span style={{ color: "red" }}>{formatNumber(item.tong_tien)}</span></Typography>
+                        <Typography sx={{ textAlign: 'center', fontStyle: 'italic', color: '#15a35e', cursor: 'pointer' }}>Xem chi tiết</Typography>
+                      </Stack>
 
-                      }
+                    </Stack>
+                  )
+                })}
 
-
-
-                    </tr>
-                  </thead>
-
-                  <tbody>
-
-                    <tr>
-                      <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc", width: "160px", whiteSpace: 'nowrap' }}>
-                        Tiền cần thanh toán
-                      </th>
-                      {chitiethoadonallThang ? chitiethoadonallThang && chitiethoadonallThang.map(item => {
-                        return (
-
-                          <th key={item[0]} style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px'>
-                              {formatNumber(item[1].tong_tien)}
-
-                              <span style={{ color: "#15a35e", fontSize: "10px", marginTop: "10px", cursor: 'pointer', }} onClick={() => handleOpenModalBill(item[1].tong_tien)}>Xem chi tiết</span>
-                            </Stack>
-                          </th>
-
-                        )
-                      })
-                        :
-                        <>
-                          <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px' justifyContent='center' alignItems='center'>
-                              <CircularProgress color='success' size={30} />
-                            </Stack>
-
-                          </th>
-
-                          <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px' justifyContent='center' alignItems='center'>
-                              <CircularProgress color='success' size={30} />
-                            </Stack>
-
-                          </th>
-
-                          <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px' justifyContent='center' alignItems='center'>
-                              <CircularProgress color='success' size={30} />
-                            </Stack>
-
-                          </th>
-                        </>
-                      }
-                    </tr>
-
-                    <tr>
-                      <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc", width: "160px" }}>
-                        Tiền đã thanh toán
-                      </th>
-                      {chitiethoadonallThang ? chitiethoadonallThang && chitiethoadonallThang.map((item) => {
-                        return (
-                          <th key={item[0]} style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px'>
-                              {item[1].hoa_don_thu.reduce((accmulator, curr) => {
-                                let totalBill = accmulator + curr.tong_tien
-                                return totalBill
-                              }, 0)}
-                              <span style={{ color: "#15a35e", fontSize: "10px", marginTop: "10px", cursor: 'pointer' }}>Xem chi tiết</span>
-                            </Stack>
-
-                          </th>
-                        )
-                      })
-                        :
-                        <>
-                          <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px' justifyContent='center' alignItems='center'>
-                              <CircularProgress color='success' size={30} />
-                            </Stack>
-
-                          </th>
-
-                          <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px' justifyContent='center' alignItems='center'>
-                              <CircularProgress color='success' size={30} />
-                            </Stack>
-                          </th>
-
-                          <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                            <Stack direction='column' spacing={2} padding='5px 5px' justifyContent='center' alignItems='center'>
-                              <CircularProgress color='success' size={30} />
-                            </Stack>
-
-                          </th>
-                        </>
-                      }
-                    </tr>
-
-                    <tr style={{ height: '40px', backgroundColor: "red" }} >
-                      <th style={{ color: "#fff", fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc", width: "160px" }}>
-                        Dư nợ
-                      </th>
-
-                      <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                        <span style={{ color: "#fff", fontSize: "14px", }}>0</span>
-                      </th>
-                      <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                        <span style={{ color: "#fff", fontSize: "14px", }}>0</span>
-                      </th>
-                      <th style={{ fontSize: "12px", borderRight: "1px solid #ccc", borderBottom: "1px solid #ccc" }}>
-                        <span style={{ color: "#fff", fontSize: "14px", }}>0</span>
-                      </th>
-                    </tr>
-                  </tbody>
-
-                </table>
                 <Stack direction='row' alignItems='center' justifyContent='center' spacing={2}>
                   <Button style={{ backgroundColor: "#15a35e", color: "#fff", textTransform: "none" }} onClick={handleOpenModalTransfer}>Báo chuyển khoản</Button>
                   <Button style={{ backgroundColor: "red", color: "#fff", textTransform: "none" }} onClick={handleOpenModalTransferPointment}>Hẹn thanh toán</Button>
@@ -353,24 +333,115 @@ export default function Home() {
 
             </div>
             <div className="wrapp-container--right">
-              <Stack direction='column' style={{ padding: '8px 16px' }}>
-                <Typography sx={{ color: "#15a35e", fontWeight: 'bold', fontSize: '20px', textAlign: 'center', marginBottom: '24px' }}>HƯỚNG DẪN THANH TOÁN TIỀN</Typography>
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '5px' }}>1. Thanh toán tiền mặt tại công ty</Typography>
-                <Typography sx={{ fontSize: '16px', color: "#969696", marginBottom: '5px' }}>Địa chỉ: Sảnh tòa nhà 41 An Nhơn, Phường 17, Quận Gò Vấp</Typography>
-                <Typography sx={{ fontSize: '16px', color: "#969696", marginBottom: '24px' }}>Liên hệ: 0398.771.881</Typography>
+              <Stack direction='column' style={{ padding: '8px 16px' }} >
+                <Stack >
+                  <Typography sx={styleTitleTimeline}>HƯỚNG DẪN THANH TOÁN TIỀN</Typography>
 
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+                      <Divider orientation='vertical' style={{ color: 'red', width: '2px', height: '10px', marginTop: '-15px' }} />
+                      <AccountBalanceOutlinedIcon className='icon-timeline' />
+                      <Divider orientation='vertical' style={styleDividerTimeline} />
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 1: Chuyển khoản về ngân hàng ACB</Typography>
+                      <Typography sx={styleTimelineText}>STK: <span style={{ color: 'red' }}> 91881 - Phan Thi Kim Loan</span></Typography>
+                      <Typography sx={styleTimelineText}> <span style={{ fontWeight: '500', color: '#a3a3a3' }}>Nội dung: ghi rõ</span>  <span style={{ color: '#15a35e', fontWeight: 'bold' }}>Số điện thoại</span> hoặc <span style={{ color: '#15a35e', fontWeight: 'bold' }}>Mã phòng</span></Typography>
+                    </Stack>
+                  </Stack>
 
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '5px' }}>2. Chuyển khoản qua ngân hàng</Typography>
-                <Typography sx={{ fontSize: '16px', color: "#969696", marginBottom: '24px' }}>Nội dung chuyển khoản: <span style={{ color: "#15a35e", fontWeight: 'bold' }}>Ghi rõ họ tên + SĐT đang thuê</span>  hoặc <span style={{ color: "#15a35e", fontWeight: 'bold' }}>mã phòng</span> </Typography>
-                <Stack direction='column' alignItems='center' justifyContent='center' sx={{ marginBottom: '24px' }}>
-                  <Image src='https://khach.nhatro3t.com/template/img/bank/acb_qr.jpg' alt='bank' width={200} height={100} />
-                  <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>104725269</Typography>
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+
+                      <NotificationsActiveOutlinedIcon className='icon-timeline' />
+                      <Divider orientation='vertical' style={styleDividerTimeline} />
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 2: Báo chuyển khoản</Typography>
+                      <Typography sx={styleTimelineText}><span style={{ color: "#a3a3a3", fontWeight: '500' }}>Đăng nhập vào website: khach.nhatro.3t.com</span> </Typography>
+                      <Typography sx={styleTimelineText}><span style={{ color: "#a3a3a3", fontWeight: '500' }}>Nhấn vào nút Báo chuyển khoản</span></Typography>
+                    </Stack>
+                  </Stack>
+
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+
+                      <ArticleOutlinedIcon className='icon-timeline' />
+                      <Divider orientation='vertical' style={styleDividerTimeline} />
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 3: Cung cấp sao kê</Typography>
+                      <Typography sx={styleTimelineText}><span style={{ color: "#a3a3a3", fontWeight: '500' }}>Nhập số tiền đã chuyển khoản kèm hình sao kê</span> </Typography>
+
+                    </Stack>
+                  </Stack>
+
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='20px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+
+                      <PriceCheckOutlinedIcon className='icon-timeline' />
+
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 4: Xác nhận tiền</Typography>
+                      <Typography sx={styleTimelineText}><span style={{ color: "#a3a3a3", fontWeight: '500' }}>Kế toán sẽ kiểm tra sao kê và xác nhận</span> </Typography>
+
+                    </Stack>
+                  </Stack>
+
                 </Stack>
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '5px' }}>3. Nhân viên đến thu trực tiếp</Typography>
-                <Typography sx={{ fontSize: '16px', color: "#969696", marginBottom: '24px' }}>Liên hệ: 0398 771 881 (Phụ phí: 10.000vnđ/lần)</Typography>
+
+
+                <Stack >
+                  <Typography sx={styleTitleTimeline}>HƯỚNG DẪN THANH TOÁN BẰNG TIỀN MẶT</Typography>
+
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+                      <Divider orientation='vertical' style={{ color: 'red', width: '2px', height: '10px', marginTop: '-15px' }} />
+                      <CheckCircleOutlineOutlinedIcon className='icon-timeline' />
+                      <Divider orientation='vertical' style={styleDividerTimeline} />
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 1: Hẹn thanh toán</Typography>
+                      <Typography sx={styleTimelineText}><span style={{ fontWeight: '500', color: '#a3a3a3' }}>Nhấn vào nút hen thanh toán bên trên</span></Typography>
+
+                    </Stack>
+                  </Stack>
+
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+
+                      <AlarmOnOutlinedIcon className='icon-timeline' />
+                      <Divider orientation='vertical' style={styleDividerTimeline} />
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 2: Chọn thời gian phù hợp</Typography>
+
+                      <Typography sx={styleTimelineText}><span style={{ fontWeight: '500', color: '#a3a3a3' }}>Nhập thời gian phù hợp để nhân viên qua thu trực tiếp</span></Typography>
+                    </Stack>
+                  </Stack>
+
+                  <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
+                    <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
+
+                      <CurrencyExchangeOutlinedIcon className='icon-timeline' sx={{ marginTop: '-40px' }} />
+
+                    </Stack>
+                    <Stack>
+                      <Typography sx={styleTimelineText}>Bước 3: Nhân viên đến thu tiền</Typography>
+                      <Typography sx={styleTimelineText}><span style={{ fontWeight: '500', color: '#a3a3a3' }}>Đến thời gian hẹn nhân viên sẽ gọi điện liên hệ để thu tiền</span></Typography>
+                      <Typography sx={styleTimelineText}><span style={{ fontWeight: '500', color: '#a3a3a3' }}>Lưu ý phụ thu 10.000đ/lần</span></Typography>
+                    </Stack>
+                  </Stack>
+
+
+
+                </Stack>
+
+
               </Stack>
             </div>
-            <DialogBill open={openModalBill} close={handleCloseModalBill} dataMoney={dataMoney} />
+            <DialogBill open={openModalBill} close={handleCloseModalBill} dataBill={dataBill} giathue={giathue} />
             <DialogTransfer open={openModalTransfer} close={handleCloseModalTransfer} />
             <DialogTransferPointment open={openModalTransferPointment} close={handleCloseModalTransferPointment} />
           </Stack>
@@ -426,6 +497,8 @@ export default function Home() {
                     <Typography sx={{ width: "100%", flex: '1', textAlign: 'right' }}>Tiền thuê:</Typography>
                     <Typography sx={{ fontWeight: "bold", flex: '1' }}>{dataSession && dinhDangSo(dataSession?.data.hopDong.gia_thue)}</Typography>
                   </Stack>
+
+
 
                   <Stack direction="row" width="100%" spacing={2}>
                     <Typography sx={{ width: "100%", flex: '1', textAlign: 'right' }}>Tiền điện:</Typography>

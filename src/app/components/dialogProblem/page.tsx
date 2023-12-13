@@ -29,6 +29,7 @@ interface DialogProblemProps {
 
 const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemProps) => {
 
+    const [clicked, setClicked] = useState(true)
     const [nhom, setLoaisuco] = useState('')
     const handleChangeLoaisuco = (event: ChangeEvent<HTMLInputElement>) => {
         setLoaisuco(event.target.value)
@@ -91,6 +92,7 @@ const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemPro
 
 
     const handleSubmitProlem = async () => {
+        setClicked(!clicked)
         try {
             const reponse = await fetch('https://ad.tro4u.com/api/version/1.0/congviec2/bao-su-co', {
                 method: "POST",
@@ -111,7 +113,7 @@ const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemPro
             const reponseSucoSubmit: SubmitSucoReponse = await reponse.json()
             console.log("reponsse", reponseSucoSubmit);
             window.location.reload();
-
+            window.location.href = "/pages/problem";
 
         } catch (error) {
             close()
@@ -196,12 +198,13 @@ const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemPro
 
         >
 
-            <DialogTitle sx={{ m: 0, padding: " 10px 11px", color: "#fff", background: "#15a35e" }} id="customized-dialog-title">
+            <DialogTitle  sx={{ m: 0, padding: " 10px 11px", color: "#fff", background: "#15a35e" }} id="customized-dialog-title">
                 BÁO SỰ CỐ
             </DialogTitle>
             <IconButton
                 aria-label="close"
                 onClick={close}
+                
                 sx={{
                     position: 'absolute',
                     right: 8,
@@ -213,11 +216,12 @@ const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemPro
             </IconButton>
             <DialogContent dividers>
                 <Stack direction='column' spacing={2}>
-                    <Stack>
+                    <Stack >
                         <SelectComponent
                             value={nhom}
                             label='Loại sự cố'
                             variant='outlined'
+                            
                             onchange={handleChangeLoaisuco}
                         >
                             <MenuItem value={'dien'}>Điện</MenuItem>
@@ -348,13 +352,35 @@ const DialogProblem = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemPro
                     variant="text" autoFocus onClick={close}>
                     Đóng
                 </Button>
+                {clicked ?
+                    <Button
+                        style={{
+                            background: "#15a35e"
+                        }} variant="contained"
+                        
+                        onClick={handleSubmitProlem}
 
-                <Button
-                    style={{
-                        background: "#15a35e"
-                    }} variant="contained" autoFocus onClick={handleSubmitProlem}>
-                    Báo
-                </Button>
+                    >
+                        Báo
+                    </Button>
+                    :
+                    <Button
+                        style={{
+                            background: "#ccc",
+                            border: '1px solid #bababa',
+                            color: 'rgb(112 110 110 / 26%)'
+                        }} variant="contained"
+                        
+                        onClick={handleSubmitProlem}
+                        disabled
+                    >
+                        Báo
+                    </Button>
+                }
+
+
+
+
             </DialogActions>
         </Dialog>
     )

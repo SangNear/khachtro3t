@@ -47,7 +47,7 @@ interface HopDong {
   phong: Phong;
   user_nhan_vien_sale: null | any;
   user_tao: UserTao;
-  all_hoa_hon: HoaDon[];
+  all_hoa_hon: HoaDonHopdong[];
 }
 
 interface Phong {
@@ -180,7 +180,7 @@ interface KhachHang {
   updated_at: string;
 }
 
-interface HoaDon {
+interface HoaDonHopdong {
   created_at: string;
   da_thu: number;
   del: number;

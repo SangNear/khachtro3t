@@ -17,16 +17,16 @@ import Paper from "@mui/material/Paper";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import FileOpenOutlinedIcon from '@mui/icons-material/FileOpenOutlined';
 import LinkOffOutlinedIcon from '@mui/icons-material/LinkOffOutlined';
 import { DataApi, Datalogin, HopDong, KhachHangHopDong } from "@/app/api/login";
 import Loading from "@/app/loading";
-
-
-
-
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import NotificationImportantOutlinedIcon from '@mui/icons-material/NotificationImportantOutlined';
+import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
 const HeaderComponent = () => {
     const pathname = usePathname();
 
@@ -136,7 +136,7 @@ const HeaderComponent = () => {
                 <div className="menu-container">
                     <div className="menu-list">
                         <Link href="/" className={`menu-items ${pathname === "/" ? "active" : ""}`}>
-                            <TextSnippetOutlinedIcon className="icon" />
+                            <ReceiptLongOutlinedIcon className="icon" />
                             <div
                                 className={`menu__item-link ${pathname === "/" ? "active" : ""
                                     }`}
@@ -149,7 +149,7 @@ const HeaderComponent = () => {
                         <Link
                             href="/pages/contact/" className={`menu-items ${pathname === "/pages/contact/" ? "active" : ""}`}
                         >
-                            <FileOpenOutlinedIcon className="icon" />
+                            <AssignmentOutlinedIcon className="icon" />
                             <div
                                 className={`menu__item-link ${pathname === "/pages/contact/" ? "active" : ""
                                     }`}
@@ -162,7 +162,7 @@ const HeaderComponent = () => {
                         <Link
                             href="/pages/problem/" className={`menu-items ${pathname === "/pages/problem/" ? "active" : ""}`}
                         >
-                            <LinkOffOutlinedIcon className="icon" />
+                            <NotificationImportantOutlinedIcon className="icon" />
                             <div
                                 className={`menu__item-link ${pathname === "/pages/problem/" ? "active" : ""
                                     }`}
@@ -178,13 +178,13 @@ const HeaderComponent = () => {
                                 : ""
                                 }`}
                         >
-                            <LocalGroceryStoreOutlinedIcon className="icon" />
+                            <GradingOutlinedIcon className="icon" />
                             <div
                                 className={`menu__item-link ${pathname === "/guestReport/" || "/income/" ? "active" : ""
                                     }`}
 
                             >
-                                Chợ
+                                Nội quy
                             </div>
 
                         </Link>
@@ -272,7 +272,7 @@ const HeaderComponent = () => {
                             </Modal>
                         </div> */}
                         <div className="menu-user">
-                            <PersonOutlineOutlinedIcon
+                            <AccountCircleIcon
                                 sx={{ fontSize: "25px", color: "#fff", cursor: "pointer" }}
                             // onClick={handleUserMenu}
                             />
@@ -398,7 +398,7 @@ const HeaderComponent = () => {
                     >
                         <LocalGroceryStoreOutlinedIcon />
                         <span className="title">
-                            Chợ
+                            Nội quy
                         </span>
                         <div className="subMenuMobile">
                             {/* <SubMenu /> */}

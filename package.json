@@ -16,6 +16,8 @@
     "@mui/lab": "^5.0.0-alpha.153",
     "@mui/material": "^5.14.18",
     "@mui/styled-engine-sc": "^6.0.0-alpha.6",
+    "@mui/x-date-pickers": "^6.18.4",
+    "dayjs": "^1.11.10",
     "next": "14.0.0",
     "next-auth": "^4.24.5",
     "react": "^18",

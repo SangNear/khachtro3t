@@ -117,7 +117,7 @@ const ProblemPage = () => {
                                         <Stack>
                                             <Typography className='fx'><b>{item.nhom_cv}</b> <b style={{ color: "#28A745" }}>({item.trang_thai})</b></Typography>
                                             <Typography className='fx' style={{ fontSize: "14px", textAlign: 'left', fontStyle: "italic" }}>{item.mo_ta}</Typography>
-                                            <Typography className='fx' style={{ fontSize: "14px", textAlign: 'left', fontStyle: "italic" }}>10:26 - 31/10/2023</Typography>
+                                            <Typography className='fx' style={{ fontSize: "14px", textAlign: 'left', fontStyle: "italic" }}>{item.created_at}</Typography>
                                         </Stack>
                                         <Stack direction='row' spacing={2}>
 

@@ -8,7 +8,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import Link from "next/link";
-
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import NotificationImportantOutlinedIcon from '@mui/icons-material/NotificationImportantOutlined';
+import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
+import zaloIocn from "../../../../public/assets/img/zaloicon.png"
+import Image from "next/image";
 const Footer = () => {
     return (
         <div className="footer-container">
@@ -17,31 +22,37 @@ const Footer = () => {
                     <div className="footer-top__items1">
                         <h2 className="footer-title">Giới thiệu</h2>
                         <p className="footer-text">
-                            Dựa trên việc đã quản lý hơn 1.000 phòng trọ, chúng tôi muốn chia
-                            sẽ phần mềm quản lý phòng trọ hoàn toàn miễn phí cho những ai có
-                            nhu cầu
+                            Nhà Trọ 3T chuyên quản lý vận hành căn hộ dịch vụ, phòng trọ, dãy trọ, ký túc xá,
+                            sleepbox tại thành phố Hồ Chí Minh.
                         </p>
                         <div className="footer-social"></div>
                     </div>
                     <div className="footer-top__items2">
                         <h2 className="footer-title">thông tin</h2>
                         <div className="info">
-                            <BorderColorIcon className="icon" />
+                            <ReceiptLongOutlinedIcon className="icon" />
                             <Link href="#">
-                                <span>Giới thiệu</span>
+                                <span>Hóa đơn</span>
                             </Link>
 
                         </div>
                         <div className="info">
-                            <LocalLibraryIcon className="icon" />
+                            <AssignmentOutlinedIcon className="icon" />
                             <Link href="#">
-                                <span>Hợp đồng mẫu</span>
+                                <span>Hợp đồng</span>
                             </Link>
                         </div>
                         <div className="info">
-                            <SettingsIcon className="icon" />
+                            <NotificationImportantOutlinedIcon className="icon" />
                             <Link href="#">
-                                <span>Quy trình vận hành</span>
+                                <span>Sự cố</span>
+                            </Link>
+
+                        </div>
+                        <div className="info">
+                            <GradingOutlinedIcon className="icon" />
+                            <Link href="#">
+                                <span>Nội quy</span>
                             </Link>
 
                         </div>
@@ -50,34 +61,32 @@ const Footer = () => {
                         <h2 className="footer-title">liên hệ</h2>
                         <div className="info">
                             <PhoneIcon className="icon" />
-                            <span>Hotline: 0907.771.881 </span>
+                            <Link href='tel:0398771881'> <span>0398 771 881</span></Link>
                         </div>
                         <div className="info">
-                            <HomeIcon className="icon" />
-                            <Link href="#">
-                                <span>Cho thuê phòng</span>
-                            </Link>
+                            <Image src={zaloIocn} alt="zalo" width={24} height={24}/>
+                            
+                                <Link href='https://zalo.me/0398771881'> <span>Zalo: 0398 771 88</span></Link>
+                            
 
                         </div>
                         <div className="info">
                             <LanguageIcon className="icon" />
-                            <span>Web: https://tro4u.com </span>
+                            <Link href='https://khach.nhatro3t.com/'> <span>Web: khach.nhatro3t.com</span></Link>
+
                         </div>
-                        <div className="info">
-                            <FacebookIcon className="icon" />
-                            <span>Web: Facebook </span>
-                        </div>
+                        
                     </div>
                 </div>
                 <div className="footer-bottom">
                     <span>
-                        Copyright© 2023{" "}
-                        <span style={{ color: "#15a35e", cursor: "pointer" }}>Tro4u</span>
+                        Copyright© 2024{" "}
+                        <Link href='https://khach.nhatro3t.com/' style={{ color: "#15a35e", cursor: "pointer", textTransform: 'none' }}>nhatro3t</Link>
                     </span>
-                    <span>Website: Https://Tro4u.Com</span>
+                    <span style={{ textTransform: 'unset' }}>Website: https://khach.nhatro3t.com</span>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

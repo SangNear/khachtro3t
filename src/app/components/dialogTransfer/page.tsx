@@ -19,6 +19,14 @@ import img from "../../../../public/assets/img/5.jpg"
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import "./page.scss"
 import InputComponent from '../textFieldComponent/InputComponent'
+import acb from "../../../../public/assets/img/acb.jpg"
+import viettin from "../../../../public/assets/img/viettinbank.png"
+import sacom from "../../../../public/assets/img/sacombank.png"
+import vietcom from "../../../../public/assets/img/vietcombank.png"
+import techcombank from "../../../../public/assets/img/techcombank.png"
+import zalo from "../../../../public/assets/img/zalopay.png"
+import momo from "../../../../public/assets/img/momo.png"
+import agribank from "../../../../public/assets/img/agribank.jpg"
 interface DialogProblemProps {
     open: boolean
     close: () => void
@@ -26,7 +34,7 @@ interface DialogProblemProps {
 }
 
 const DialogTransfer = ({ open, close }: DialogProblemProps) => {
-    
+
 
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
@@ -51,7 +59,7 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
             minWidth: '350px',
 
             "@media (max-width: 783px)": {
-                
+
                 maxWidth: '100%',
             }
         }
@@ -94,7 +102,9 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
         }
     }
 
-
+    const dialogContent = {
+        padding: '16px 10px'
+    }
 
     return (
         <Dialog
@@ -120,7 +130,7 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
             >
                 <CloseIcon />
             </IconButton>
-            <DialogContent dividers>
+            <DialogContent sx={dialogContent} dividers>
                 <Stack>
                     <Stack>
                         <Typography sx={{ color: "#15a35e", fontSize: "18px", fontWeight: "600", textAlign: "center" }}>QX11</Typography>
@@ -128,14 +138,38 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                     <Stack spacing={1}>
                         <InputComponent label='Tiền' variant={'outlined'}></InputComponent>
                         <SelectComponent label={'Chọn ngân hàng'} variant={'outlined'} >
-                            <MenuItem value='acb'>ACB</MenuItem>
-                            <MenuItem value='vtb'>Viettinbank</MenuItem>
-                            <MenuItem value='vcb'>Vietcombank</MenuItem>
-                            <MenuItem value='agr'>Agribank</MenuItem>
-                            <MenuItem value='sa'>Sacombank</MenuItem>
-                            <MenuItem value='te'>Techcombank</MenuItem>
-                            <MenuItem value='zalo'>Zalo pay</MenuItem>
-                            <MenuItem value='mo'>MoMo</MenuItem>
+                            <MenuItem value='acb' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={acb} width={70} height={25} alt='acb' />
+                                <span>ACB</span>
+                            </MenuItem>
+                            <MenuItem value='vtb' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={viettin} width={70} height={25} alt='acb' />
+                                <span>Viettinbank</span>
+                            </MenuItem>
+                            <MenuItem value='vcb' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={vietcom} width={70} height={25} alt='acb' />
+                                <span>Vietcombank</span>
+                            </MenuItem>
+                            <MenuItem value='agr' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={agribank} width={70} height={25} alt='acb' />
+                                <span>Agribank</span>
+                            </MenuItem>
+                            <MenuItem value='sa' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={sacom} width={70} height={25} alt='acb' />
+                                <span>Sacombank</span>
+                            </MenuItem>
+                            <MenuItem value='te' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={techcombank} width={70} height={25} alt='acb' />
+                                <span>Techcombank</span>
+                            </MenuItem>
+                            <MenuItem value='zalo' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={zalo} width={70} height={25} alt='acb' />
+                                <span>Zalo pay</span>
+                            </MenuItem>
+                            <MenuItem value='mo' sx={{ display: 'flex', gap: "20px" }}>
+                                <Image src={momo} width={70} height={25} alt='acb' />
+                                <span>Momo</span>
+                            </MenuItem>
                         </SelectComponent>
                         <Typography sx={{ color: "#ccc", fontSize: "14px", textAlign: "center" }}>Vui lòng chọn tài khoản của chủ trọ</Typography>
                     </Stack>
@@ -160,7 +194,7 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                     </Stack>
                 </Stack>
             </DialogContent>
-            
+
             <DialogActions sx={styleDialogAction}>
                 <Button
 
