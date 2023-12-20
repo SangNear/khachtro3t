@@ -19,6 +19,38 @@
         border-radius: 6px;
     }
 
+    .contact-container--signatures {
+        background-color: #fff;
+        padding: 8px 16px;
+        border-radius: 6px;
+
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+
+        .signature--item {
+            flex: 1;
+
+            text-align: center;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .sigCanvas {
+                height: 100%;
+                width: 100%;
+                max-height: 200px;
+                border: 1px solid #e2e2e2;
+                border-radius: 4px;
+            }
+
+            .imgSign {
+                width: 50%;
+            }
+        }
+    }
+
     .contact-container--bottom {
         background-color: #fff;
         padding: 8px 16px;
@@ -31,10 +63,28 @@
     .fontsize-mobile {
         font-size: 12px !important;
     }
+
     .fontsize-mobile--tile {
         font-size: 18px !important;
     }
 
+    .contact-container--signatures {
+
+
+        .signature--item {
+
+
+            .sigCanvas {}
+
+            .imgSign {
+                width: 100% !important;
+            }
+        }
+
+        .btn-sign--text {
+            display: none;
+        }
+    }
 
     /* Khi chiều rộng của thiết bị nhỏ hơn hoặc bằng 600px, thay đổi fontSize */
 

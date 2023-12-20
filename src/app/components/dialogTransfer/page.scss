@@ -3,8 +3,26 @@
     font-size: 14px;
     height: 100px;
     border-radius: 6px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 
     :focus-visible {
         outline: unset !important;
+    }
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 10px !important;
+
+    .input-label--span {
+        color: #15a35e;
+        position: absolute;
+        font-size: 13px;
+        top: -14px;
+        /* top: -25px; */
+        background-color: white;
+        padding: 5px;
+        left: 35px;
+        z-index: 10;
     }
 }

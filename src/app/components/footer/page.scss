@@ -37,7 +37,7 @@
         .footer-text {
           color: #a4a4a4;
           font-size: 16px;
-          line-height: 30px;
+          line-height: 1.5rem;
           max-width: 390px;
           width: fit-content;
         }
@@ -48,10 +48,11 @@
       .footer-top__items2 {
         flex-grow: 2;
         width: 77px;
-        gap: 15px;
+        gap: 8px;
         display: flex;
         flex-direction: column;
         align-items: baseline;
+        
 
         @media (max-width: 785px) {
           width: 100%;
@@ -111,10 +112,11 @@
       .footer-top__items3 {
         flex-grow: 2;
         width: 77px;
-        gap: 15px;
+        gap: 8px;
         display: flex;
         flex-direction: column;
         align-items: self-end;
+        
 
         @media (max-width: 785px) {
           width: 100%;

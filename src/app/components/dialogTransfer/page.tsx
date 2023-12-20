@@ -13,7 +13,7 @@ import Slide from '@mui/material/Slide'
 import Stack from '@mui/material/Stack'
 import SelectComponent from '../textFieldComponent/SelectComponent'
 import MenuItem from '@mui/material/MenuItem'
-import { Checkbox, Divider, FormControlLabel, Typography } from '@mui/material'
+import { Checkbox, Divider, FormControlLabel, TextField, Typography } from '@mui/material'
 import Image from 'next/image'
 import img from "../../../../public/assets/img/5.jpg"
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -27,13 +27,32 @@ import techcombank from "../../../../public/assets/img/techcombank.png"
 import zalo from "../../../../public/assets/img/zalopay.png"
 import momo from "../../../../public/assets/img/momo.png"
 import agribank from "../../../../public/assets/img/agribank.jpg"
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 interface DialogProblemProps {
     open: boolean
     close: () => void
-
+    id_hop_dong?: number
+    sdt_khach: string
 }
 
-const DialogTransfer = ({ open, close }: DialogProblemProps) => {
+const DialogTransfer = ({ open, close, id_hop_dong, sdt_khach }: DialogProblemProps) => {
+
+    const [so_tien, setMoney] = useState("")
+    const [id_hoa_don, setIdHoadon] = useState(0)
+    const [ghi_chu, setGhichu] = useState('')
+    const [hinh_thuc, setHinhthuc] = useState('')
+    const handleChangeNote = (event: ChangeEvent<HTMLInputElement>) => {
+        setGhichu(event.target.value as string)
+    }
+    const handleChangeBank = (event: ChangeEvent<HTMLInputElement>) => {
+        setHinhthuc(event.target.value as string)
+    }
+    // const [all_hinh_cong_viec_base64, sethinhconviec] = useState<string[] | string>()
+
+    const handleChangeMoney = (event: ChangeEvent<HTMLInputElement>) => {
+        setMoney(event.target.value)
+    }
 
 
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -46,6 +65,107 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
             const fileArray = Array.from(selectedFiles) as File[];
             setSelectedImages(prevImages => [...prevImages, ...fileArray]);
         }
+
+    };
+    const fileToBase64 = (file: File) => {
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                resolve(reader.result as string);
+            };
+
+            reader.onerror = (error) => {
+                reject(error);
+            };
+
+
+        });
+    };
+
+
+
+    const handleSubmit = async () => {
+        const base64String = await fileToBase64(selectedImages[0]);
+        const all_hinh_cong_viec_base64 = base64String.split(' ')
+        try {
+            const response = await fetch('https://ad.tro4u.com/api/version/1.0/hoadon/save-thanh-toan?', {
+                method: "POST",
+                body: JSON.stringify({
+                    id_hop_dong,
+                    id_hoa_don,
+                    hinh_thuc,
+                    so_tien,
+                    ghi_chu,
+                    sdt_khach,
+                    all_hinh_cong_viec_base64
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            const data = response.json()
+            console.log("data chuyển khoản", data);
+
+        } catch (error) {
+
+        }
+
+        // console.log({
+        //     id_hop_dong,
+        //     id_hoa_don,
+        //     so_tien,
+        //     sdt_khach,
+        //     all_hinh_cong_viec_base64
+        // });
+        // close()
+    }
+
+    const textfield = {
+        // maxHeight: "30px",
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#15a35e',
+        },
+        '.MuiSelect-select': {
+
+            color: "#15a35e"
+        },
+
+        '.MuiInputBase-root': {
+            height: "100px"
+        },
+        '.MuiSvgIcon-root ': {
+            fill: "black !important",
+        },
+        '.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: "#15a35e"
+        },
+        ".css-x2l1vy-MuiInputBase-root-MuiOutlinedInput-root": {
+            color: "#ccc",
+        },
+
+
+        "& .MuiFormLabel-root": {
+            color: "#cfcfcf",
+
+
+        },
+        '.MuiInputLabel-outlined.Mui-focused': {
+
+            color: "#15a35e",
+
+        },
+        '&.Mui-focused': {
+            color: '#15a35e', // Màu khi textfield được focus
+            borderColor: '#15a35e !important', // Màu viền khi textfield được focus
+        },
+
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#15a35e !important', // Màu viền khi textfield được hover
+        },
+        background: "#fff",
+
     };
     const styleDialogCustom = {
         padding: '5px',
@@ -135,46 +255,80 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                     <Stack>
                         <Typography sx={{ color: "#15a35e", fontSize: "18px", fontWeight: "600", textAlign: "center" }}>QX11</Typography>
                     </Stack>
-                    <Stack spacing={1}>
-                        <InputComponent label='Tiền' variant={'outlined'}></InputComponent>
-                        <SelectComponent label={'Chọn ngân hàng'} variant={'outlined'} >
-                            <MenuItem value='acb' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={acb} width={70} height={25} alt='acb' />
-                                <span>ACB</span>
-                            </MenuItem>
-                            <MenuItem value='vtb' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={viettin} width={70} height={25} alt='acb' />
-                                <span>Viettinbank</span>
-                            </MenuItem>
-                            <MenuItem value='vcb' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={vietcom} width={70} height={25} alt='acb' />
-                                <span>Vietcombank</span>
-                            </MenuItem>
-                            <MenuItem value='agr' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={agribank} width={70} height={25} alt='acb' />
-                                <span>Agribank</span>
-                            </MenuItem>
-                            <MenuItem value='sa' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={sacom} width={70} height={25} alt='acb' />
-                                <span>Sacombank</span>
-                            </MenuItem>
-                            <MenuItem value='te' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={techcombank} width={70} height={25} alt='acb' />
-                                <span>Techcombank</span>
-                            </MenuItem>
-                            <MenuItem value='zalo' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={zalo} width={70} height={25} alt='acb' />
-                                <span>Zalo pay</span>
-                            </MenuItem>
-                            <MenuItem value='mo' sx={{ display: 'flex', gap: "20px" }}>
-                                <Image src={momo} width={70} height={25} alt='acb' />
-                                <span>Momo</span>
-                            </MenuItem>
-                        </SelectComponent>
-                        <Typography sx={{ color: "#ccc", fontSize: "14px", textAlign: "center" }}>Vui lòng chọn tài khoản của chủ trọ</Typography>
+
+                    <Stack spacing={1} marginTop='10px'>
+
+                        <div className='input-container'>
+                            <span className='input-label--span'>Tiền chuyển khoản</span>
+                            <Stack direction='row' alignItems='center' gap={1}>
+                                <div>
+                                    <AttachMoneyIcon sx={{ color: "#15a35e" }} />
+                                </div>
+
+                                <InputComponent label='Nhập số tiền' variant={'outlined'} onchange={handleChangeMoney} />
+                            </Stack>
+
+                        </div>
+
+
+                        <div className='input-container'>
+                            <span className='input-label--span'>Chọn ngân hàng</span>
+                            <Stack direction='row' alignItems='center' gap={1}>
+                                <div>
+                                    <CurrencyExchangeIcon sx={{ color: "#15a35e" }} />
+                                </div>
+                                <SelectComponent label={'Ngân hàng'} variant={'outlined'} onchange={handleChangeBank} value={hinh_thuc} >
+                                    <MenuItem value='ACB' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={acb} width={70} height={25} alt='acb' />
+                                        <span>ACB</span>
+                                    </MenuItem>
+                                    <MenuItem value='Vietinbank' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={viettin} width={70} height={25} alt='acb' />
+                                        <span>Viettinbank</span>
+                                    </MenuItem>
+                                    <MenuItem value='Vietcombank' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={vietcom} width={70} height={25} alt='acb' />
+                                        <span>Vietcombank</span>
+                                    </MenuItem>
+                                    <MenuItem value='Agribank' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={agribank} width={70} height={25} alt='acb' />
+                                        <span>Agribank</span>
+                                    </MenuItem>
+                                    <MenuItem value='Sacombank' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={sacom} width={70} height={25} alt='acb' />
+                                        <span>Sacombank</span>
+                                    </MenuItem>
+                                    <MenuItem value='Techcombank' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={techcombank} width={70} height={25} alt='acb' />
+                                        <span>Techcombank</span>
+                                    </MenuItem>
+                                    <MenuItem value='Zalopay' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={zalo} width={70} height={25} alt='acb' />
+                                        <span>Zalo pay</span>
+                                    </MenuItem>
+                                    <MenuItem value='Momo' sx={{ display: 'flex', gap: "20px" }}>
+                                        <Image src={momo} width={70} height={25} alt='acb' />
+                                        <span>Momo</span>
+                                    </MenuItem>
+                                </SelectComponent>
+                            </Stack>
+                            <Typography sx={{ color: "#ccc", fontSize: "14px", textAlign: "center" }}>Vui lòng chọn tài khoản của chủ trọ</Typography>
+                        </div>
+
+
                     </Stack>
                     <Stack>
-                        <textarea className='form-control' placeholder='Ghi chú'></textarea>
+                        <div className='input-container'>
+                            <span className='input-label--span'>Ghi chú</span>
+                            <Stack direction='row' alignItems='center' gap={1}>
+                                <div>
+                                    <AttachMoneyIcon sx={{ color: "#15a35e" }} />
+                                </div>
+
+                                <TextField onChange={handleChangeNote} fullWidth label='Ghi chú' variant={'outlined'} multiline sx={textfield} />
+                            </Stack>
+
+                        </div>
                     </Stack>
                     <Stack alignItems='center' spacing={2}>
                         <input style={input} type='file' id='file' onChange={handleFileChange} />
@@ -186,6 +340,8 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                                     <Image key={index} src={URL.createObjectURL(file)} alt={`selected-${index}`} width={80} height={80} style={{ borderRadius: '6px' }} />
                                 ))
                             ) : <label style={label} className='label' htmlFor="file"><CameraAltIcon /></label>}
+
+
 
                         </Stack>
                         <Stack>
@@ -206,7 +362,7 @@ const DialogTransfer = ({ open, close }: DialogProblemProps) => {
                 <Button
                     style={{
                         background: "#15a35e"
-                    }} variant="contained" autoFocus onClick={close}>
+                    }} variant="contained" autoFocus onClick={handleSubmit}>
                     Gửi
                 </Button>
             </DialogActions>

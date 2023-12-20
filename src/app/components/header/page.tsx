@@ -27,6 +27,7 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import NotificationImportantOutlinedIcon from '@mui/icons-material/NotificationImportantOutlined';
 import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 const HeaderComponent = () => {
     const pathname = usePathname();
 
@@ -81,7 +82,7 @@ const HeaderComponent = () => {
 
 
                 if (userData.id == item.id_hop_dong) {
-                    
+
                     setIsLoading(false)
                     setDataUser(item)
 
@@ -173,20 +174,16 @@ const HeaderComponent = () => {
                         </Link>
 
                         <Link
-                            href="#" className={`menu-items ${pathname === "/guestReport/" || pathname === "/income/"
-                                ? "active"
-                                : ""
-                                }`}
+                            href="/pages/support/" className={`menu-items ${pathname === "/pages/support/" ? "active" : ""}`}
                         >
-                            <GradingOutlinedIcon className="icon" />
+                            <HelpOutlineIcon className="icon" />
                             <div
-                                className={`menu__item-link ${pathname === "/guestReport/" || "/income/" ? "active" : ""
+                                className={`menu__item-link ${pathname === "/pages/support/" ? "active" : ""
                                     }`}
 
                             >
-                                Nội quy
+                                Hỗ trợ
                             </div>
-
                         </Link>
 
 
@@ -392,18 +389,19 @@ const HeaderComponent = () => {
                         <span>Sự cố</span>
                     </Link>
 
-                    <div
-                        className={`menuMobile-items ${pathname === "/report" ? "activeMobieMenu" : ""
+                    <Link
+                        href="/pages/support"
+                        className={`menuMobile-items ${pathname === "/pages/support/" ? "activeMobieMenu" : ""
                             } `}
                     >
-                        <LocalGroceryStoreOutlinedIcon />
+                        <HelpOutlineIcon />
                         <span className="title">
-                            Nội quy
+                            Hỗ trợ
                         </span>
                         <div className="subMenuMobile">
-                            {/* <SubMenu /> */}
+
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
             </div>

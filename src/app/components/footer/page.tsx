@@ -49,13 +49,13 @@ const Footer = () => {
                             </Link>
 
                         </div>
-                        <div className="info">
+                        {/* <div className="info">
                             <GradingOutlinedIcon className="icon" />
                             <Link href="#">
                                 <span>Nội quy</span>
                             </Link>
 
-                        </div>
+                        </div> */}
                     </div>
                     <div className="footer-top__items3">
                         <h2 className="footer-title">liên hệ</h2>
@@ -83,7 +83,7 @@ const Footer = () => {
                         Copyright© 2024{" "}
                         <Link href='https://khach.nhatro3t.com/' style={{ color: "#15a35e", cursor: "pointer", textTransform: 'none' }}>nhatro3t</Link>
                     </span>
-                    <span style={{ textTransform: 'unset' }}>Website: https://khach.nhatro3t.com</span>
+                    {/* <span style={{ textTransform: 'unset' }}>Website: https://khach.nhatro3t.com</span> */}
                 </div>
             </div>
         </div >

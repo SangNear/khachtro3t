@@ -9,9 +9,21 @@ import Divider from '@mui/material/Divider'
 import InputComponent from '@/app/components/textFieldComponent/InputComponent'
 import OtpInput from "react-otp-input";
 import CircularProgress from '@mui/material/CircularProgress';
+import SignatureCanvas from 'react-signature-canvas'
 import { OtpResponse, OtpResponseSubmit } from '@/app/api/otp'
+import ReactSignatureCanvas from 'react-signature-canvas'
+import { ButtonGroup } from '@mui/material'
+import { url } from 'inspector'
+import Image from 'next/image'
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 const ContactPage = () => {
-
+    const [hasSignA, setHasSignA] = useState(false)
+    const [hasSignB, setHasSignB] = useState(false)
+    const [signA, setSignA] = useState<ReactSignatureCanvas | null>(null);
+    const [signB, setSignB] = useState<ReactSignatureCanvas | null>(null);
+    const [urlA, setUrlA] = useState<string | undefined>();
+    const [urlB, setUrlB] = useState<string | undefined>();
     const [hopdongApi, setHopdongApi] = useState<ApiHopdongResponse>()
     const [isLoading, setIsLoading] = useState(true);
     const [otp, setOtp] = useState("");
@@ -82,7 +94,7 @@ const ContactPage = () => {
             })
             const dataSubmit: OtpResponseSubmit = await response.json()
 
-            if(dataSubmit.status) {
+            if (dataSubmit.status) {
                 setIsSign(true)
             }
         }
@@ -90,7 +102,7 @@ const ContactPage = () => {
             setErrorsOTP("Mã OTP không trùng khớp! Xin thử lại")
         }
     };
-    console.log("issigng", typeof (isSign));
+
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -202,6 +214,56 @@ const ContactPage = () => {
             opacity: 0.8
         }
     }
+    const handleClearSignA = () => {
+        signA?.clear()
+    }
+    const handleClearSignB = () => {
+        signB?.clear()
+    }
+    const handleSaveSignA = () => {
+        setUrlA(signA?.getTrimmedCanvas().toDataURL('image/png'))
+        setHasSignA(true)
+    }
+    const handleSaveSignB = () => {
+        setUrlB(signB?.getTrimmedCanvas().toDataURL('image/png'))
+        setHasSignB(true)
+    }
+
+    const handleChangeSignA = () => {
+        setUrlA('')
+        setHasSignA(false)
+    }
+    const handleChangeSignB = () => {
+        setUrlB('')
+        setHasSignB(false)
+    }
+    const btnSignSave = {
+        border: "1px solid green",
+        color: 'green',
+        "&:hover": {
+            backgroundColor: '#fff',
+            border: "1px solid green",
+
+        }
+    }
+    const btnSignDelete = {
+        border: "1px solid red",
+        color: 'red',
+        "&:hover": {
+            backgroundColor: '#fff',
+            border: "1px solid red",
+
+        }
+    }
+    const btnText = {
+        fontSize: '12px',
+        "@media (max-width: 783px)": {
+            width: "100%",
+            minWidth: '320px',
+            maxWidth: '100%',
+        }
+    }
+
     return (
 
         <div className="contact-container">
@@ -398,6 +460,77 @@ const ContactPage = () => {
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 9: HIỆU LỰC HỢP ĐỒNG</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Hợp đồng này sẽ có hiệu lực ngay tại thời điểm bên thuê <b>xác nhận nhập mã OPT.</b> </Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Tại thời điểm xác nhận bên thuê có đầy đủ nhận thức và hiểu rõ hành vi của mình </Typography>
+
+            </div>
+            <div className="contact-container--signatures">
+                <Stack sx={{ width: '50%' }}>
+                    <Typography sx={{ textAlign: 'center', fontStyle: 'italic', fontWeight: 'bold' }}>Bên A</Typography>
+                    <div className='signature--item' >
+                        {urlA ?
+                            <img src={urlA} alt='signA' className='imgSign' />
+                            : <SignatureCanvas penColor='green'
+                                ref={data => setSignA(data)}
+                                canvasProps={{ className: 'sigCanvas' }} />}
+
+
+                    </div>
+
+                    <Stack direction='row' alignItems='center' justifyContent='center' marginTop="10px">
+                        {hasSignA ? <Button variant='outlined' onClick={handleChangeSignA}>Thay đổi</Button> :
+                            <Stack direction='row' gap={1}>
+                                <Button sx={btnSignDelete} variant='outlined' onClick={handleClearSignA}>
+                                    <DeleteOutlineOutlinedIcon />
+                                    <span className='btn-sign--text' >Xóa</span>
+                                </Button>
+                                <Button sx={btnSignSave} variant='outlined' onClick={handleSaveSignA}>
+                                    <SaveOutlinedIcon />
+                                    <span className='btn-sign--text' >Lưu</span>
+                                </Button>
+                            </Stack>
+
+
+
+                        }
+
+
+                    </Stack>
+
+
+                </Stack>
+
+
+                <Stack sx={{ width: '50%' }}>
+                    <Typography sx={{ textAlign: 'center', fontStyle: 'italic', fontWeight: 'bold' }}>Bên B</Typography>
+                    <div className='signature--item' >
+
+                        {urlB ?
+                            <img src={urlB} alt='signB' className='imgSign' style={{ textAlign: 'center' }} />
+                            : <SignatureCanvas penColor='green'
+                                ref={data => setSignB(data)}
+                                canvasProps={{ className: 'sigCanvas' }} />}
+                    </div>
+                    <Stack direction='row' alignItems='center' justifyContent='center' marginTop="10px">
+
+                        {hasSignB ? <Button variant='outlined' onClick={handleChangeSignB}>Thay đổi</Button> :
+                            <Stack direction='row' gap={1}>
+                                <Button sx={btnSignDelete} variant='outlined' onClick={handleClearSignB}>
+                                    <DeleteOutlineOutlinedIcon />
+                                    <span className='btn-sign--text'>Xóa</span>
+                                </Button>
+                                <Button sx={btnSignSave} variant='outlined' onClick={handleSaveSignB}>
+                                    <SaveOutlinedIcon />
+                                    <span className='btn-sign--text' >Lưu</span>
+                                </Button></Stack>
+
+
+
+                        }
+
+
+                    </Stack>
+                </Stack>
+
+
 
             </div>
             <div className="contact-container--bottom">

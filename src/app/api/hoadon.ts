@@ -18,8 +18,33 @@ export interface HoaDon {
   thanh_tien_xe: number;
   thanh_tien_rac: number;
   thanh_tien_net: number;
+  thanh_tien_thue: number;
   tu_ngay: string,
   den_ngay: string
+  gia_dien: number,
+  gia_dien_1: number,
+  gia_nuoc: number
+  gia_nuoc_1: number
+  gia_xe: number,
+  gia_rac: number,
+  gia_net: number
+
+}
+
+export interface HoadonThu {
+  id: number;
+  tong_tien: number;
+  loai: string;
+  tinh_trang_thu: string
+  thanh_tien_khac: number;
+  tien_khuyen_mai: number;
+  created_at: string;
+  sms: number;
+  zns: number;
+  thoi_gian_gui_sms: string | null;
+  thoi_gian_gui_zns: string | null;
+  hinh_thuc: string // Thay thế bằng các giá trị thực tế của hình thức thanh toán
+  hen_thanh_toan: string | null;
 }
 
 export interface ThangData {
@@ -33,7 +58,7 @@ export interface ThangData {
   hoa_don_coc: HoaDon[];
   hoa_don_khac: HoaDon[];
   hoa_don_km: HoaDon[];
-  hoa_don_thu: HoaDon[];
+  hoa_don_thu: HoadonThu[];
   hoa_don_du_no_moi: HoaDon[];
   tong_tien: number;
 }

@@ -22,14 +22,17 @@ import PriceCheckOutlinedIcon from '@mui/icons-material/PriceCheckOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
 import CurrencyExchangeOutlinedIcon from '@mui/icons-material/CurrencyExchangeOutlined';
-
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import { ApiHoaDonResponse, ThangData } from './api/hoadon'
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import DialogPayed from './components/dialogPayed/page'
 export default function Home() {
   const [openModalBill, setOpenModalBill] = useState(false)
+  const [openModalPayed, setOpenModalPayed] = useState(false)
   const [dataBill, setdataBill] = useState<ThangData | undefined>()
   const [hoadonApi, setHoadonApi] = useState<ApiHoaDonResponse>()
   const [giathue, setGiathue] = useState(0)
-
+  const [tenphong, setTenphong] = useState('')
 
   const handleOpenModalBill = (data: ThangData) => {
     setOpenModalBill(!openModalBill)
@@ -40,6 +43,15 @@ export default function Home() {
     setOpenModalBill(false)
   }
 
+  const handleOpenModalPayed = (data: ThangData) => {
+    setOpenModalPayed(!openModalBill)
+    setdataBill(data)
+  }
+
+  const handleCloseModalPayed = () => {
+    setOpenModalPayed(false)
+  }
+
 
 
 
@@ -47,7 +59,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   const formatNumber = (num: number): string => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
   const [openModalTransfer, setOpenModalTransfer] = useState(false)
@@ -92,7 +104,6 @@ export default function Home() {
         }
 
         let id_hop_dong = userData.id
-
         const clearLocalStorage = () => {
           // Clear localStorage
           localStorage.clear();
@@ -138,6 +149,7 @@ export default function Home() {
             setDataSession(dataApi)
             setIsLoading(false)
             setGiathue(dataApi.data.hopDong.gia_thue)
+            setTenphong(dataApi.data.hopDong.phong.ten)
           }
           catch (error) {
 
@@ -191,7 +203,7 @@ export default function Home() {
 
   }, []);
 
-  console.log("data session", dataSession?.data.hopDong.gia_thue);
+  console.log("data session", dataSession);
 
 
   const styleCircle = {
@@ -219,7 +231,7 @@ export default function Home() {
     fontWeight: 'bold',
     fontSize: '20px',
     textAlign: 'left',
-    marginBottom: '10px',
+    margin: '15px 0 10px',
     "@media (max-width: 768px)": {
       fontSize: '15px',
     }
@@ -314,7 +326,7 @@ export default function Home() {
                           {item.hoa_don_thu.length > 0 ? formatNumber(item.hoa_don_thu.reduce((acc, curr) => acc + curr.tong_tien, 0)) : 0}
                           /
                           <span style={{ color: "red" }}>{formatNumber(item.tong_tien)}</span></Typography>
-                        <Typography sx={{ textAlign: 'center', fontStyle: 'italic', color: '#15a35e', cursor: 'pointer' }}>Xem chi tiết</Typography>
+                        <Typography sx={{ textAlign: 'center', fontStyle: 'italic', color: '#15a35e', cursor: 'pointer' }} onClick={() => handleOpenModalPayed(item)}>Xem chi tiết</Typography>
                       </Stack>
 
                     </Stack>
@@ -322,8 +334,24 @@ export default function Home() {
                 })}
 
                 <Stack direction='row' alignItems='center' justifyContent='center' spacing={2}>
-                  <Button style={{ backgroundColor: "#15a35e", color: "#fff", textTransform: "none" }} onClick={handleOpenModalTransfer}>Báo chuyển khoản</Button>
-                  <Button style={{ backgroundColor: "red", color: "#fff", textTransform: "none" }} onClick={handleOpenModalTransferPointment}>Hẹn thanh toán</Button>
+                  <Stack>
+
+                    <Button style={{ backgroundColor: "#15a35e", color: "#fff", textTransform: "none", display: 'flex', gap: '5px' }} onClick={handleOpenModalTransfer}>
+                      <ContactMailIcon />
+                      <span>Báo chuyển khoản</span>
+
+                    </Button>
+                  </Stack>
+                  <Stack>
+
+                    <Button style={{ backgroundColor: "red", color: "#fff", textTransform: "none", display: 'flex', gap: '5px' }} onClick={handleOpenModalTransferPointment}>
+                      <EditCalendarIcon />
+                      <span>Hẹn thanh toán</span>
+
+                    </Button>
+                  </Stack>
+
+
                 </Stack>
                 <Stack direction='column' alignItems='center' justifyContent='center'>
                   <Typography sx={{ color: "silver", textAlign: "center" }}>Bạn vui lòng nhấn vào số tiền để xem chi tiết hóa đơn</Typography>
@@ -335,7 +363,7 @@ export default function Home() {
             <div className="wrapp-container--right">
               <Stack direction='column' style={{ padding: '8px 16px' }} >
                 <Stack >
-                  <Typography sx={styleTitleTimeline}>HƯỚNG DẪN THANH TOÁN TIỀN</Typography>
+                  <Typography sx={styleTitleTimeline}>THANH TOÁN TIỀN CHUYỂN KHOẢN</Typography>
 
                   <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
                     <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
@@ -345,7 +373,7 @@ export default function Home() {
                     </Stack>
                     <Stack>
                       <Typography sx={styleTimelineText}>Bước 1: Chuyển khoản về ngân hàng ACB</Typography>
-                      <Typography sx={styleTimelineText}>STK: <span style={{ color: 'red' }}> 91881 - Phan Thi Kim Loan</span></Typography>
+                      <Typography sx={{ color: '#a3a3a3', }}>STK: <span style={{ color: 'red', fontWeight: 'bold' }}> 91881 - Phan Thi Kim Loan</span></Typography>
                       <Typography sx={styleTimelineText}> <span style={{ fontWeight: '500', color: '#a3a3a3' }}>Nội dung: ghi rõ</span>  <span style={{ color: '#15a35e', fontWeight: 'bold' }}>Số điện thoại</span> hoặc <span style={{ color: '#15a35e', fontWeight: 'bold' }}>Mã phòng</span></Typography>
                     </Stack>
                   </Stack>
@@ -393,7 +421,7 @@ export default function Home() {
 
 
                 <Stack >
-                  <Typography sx={styleTitleTimeline}>HƯỚNG DẪN THANH TOÁN BẰNG TIỀN MẶT</Typography>
+                  <Typography sx={styleTitleTimeline}>THANH TOÁN BẰNG TIỀN MẶT</Typography>
 
                   <Stack direction='row' alignItems='center' gap='10px' marginBottom='14px'>
                     <Stack direction='column' justifyContent='center' alignItems='center' gap='10px'>
@@ -441,9 +469,20 @@ export default function Home() {
 
               </Stack>
             </div>
-            <DialogBill open={openModalBill} close={handleCloseModalBill} dataBill={dataBill} giathue={giathue} />
-            <DialogTransfer open={openModalTransfer} close={handleCloseModalTransfer} />
-            <DialogTransferPointment open={openModalTransferPointment} close={handleCloseModalTransferPointment} />
+            <DialogBill open={openModalBill} close={handleCloseModalBill} dataBill={dataBill} tenphong={tenphong} />
+            <DialogPayed open={openModalPayed} close={handleCloseModalPayed} dataBill={dataBill} />
+            <DialogTransfer
+              open={openModalTransfer}
+              close={handleCloseModalTransfer}
+              id_hop_dong={dataSession && dataSession?.data.hopDong.id}
+              sdt_khach={dataSession && dataSession?.data.hopDong.khach.sdt_khach}
+            />
+            <DialogTransferPointment
+              open={openModalTransferPointment}
+              close={handleCloseModalTransferPointment}
+              id_hop_dong={dataSession && dataSession?.data.hopDong.id}
+              id_hoa_don={hoadonApi && hoadonApi.data.hoaDonNow && hoadonApi.data.hoaDonNow.id}
+            />
           </Stack>
         </ContainerComponent>
 

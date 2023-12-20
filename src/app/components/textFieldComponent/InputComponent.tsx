@@ -1,6 +1,6 @@
 "use client"
 import TextField from '@mui/material/TextField'
-import React, { useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 
 
 type TextAlign = "left" | "center" | "right" | "justify";
@@ -14,10 +14,10 @@ interface InputComponentProps {
     multiline?: boolean
     align?: TextAlign
     type?: string
-    onkeydown? : any
-
+    onkeydown?: any
+    placeholder?: string
 }
-const InputComponent = ({ data, label, onchange, variant, size, multiline, align, type,onkeydown }: InputComponentProps) => {
+const InputComponent = ({ data, label, onchange, variant, size, multiline, align, type, onkeydown, placeholder, }: InputComponentProps) => {
 
     const textfield = {
         // maxHeight: "30px",
@@ -25,7 +25,7 @@ const InputComponent = ({ data, label, onchange, variant, size, multiline, align
             borderColor: '#15a35e',
         },
         '.MuiSelect-select': {
-            
+
             color: "#15a35e"
         },
 
@@ -55,7 +55,7 @@ const InputComponent = ({ data, label, onchange, variant, size, multiline, align
 
         },
         '.MuiInputLabel-outlined.Mui-focused': {
-            
+
             color: "#15a35e",
 
         },
@@ -85,6 +85,7 @@ const InputComponent = ({ data, label, onchange, variant, size, multiline, align
                 fullWidth
                 sx={textfield}
                 onKeyDown={onkeydown}
+                placeholder={placeholder}
                 inputProps={{
                     style: {
                         fontSize: "1.5rem",
