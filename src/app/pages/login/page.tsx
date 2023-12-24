@@ -12,16 +12,16 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import ReCAPTCHA from "react-google-recaptcha"
 import Stack from '@mui/material/Stack'
 import DialogChooseRoom from '@/app/components/dialogChooseRoom/page'
-import { DataApi } from '@/app/api/login'
+import { DataApi, Datalogin } from '@/app/api/login'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
 
 
 const Login = () => {
-  
+
 
   useEffect(() => {
-    
+
     // Xóa dữ liệu từ localStorage khi vào trang Login
     localStorage.clear();
   }, []);
@@ -45,7 +45,7 @@ const Login = () => {
 
   const handleKeyPressEnter = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     // Kiểm tra nếu phím được nhấn là phím Enter (keyCode 13)
-    
+
     if (event.key === 'Enter') {
       handleLogin(event)
 
@@ -88,6 +88,7 @@ const Login = () => {
         }
 
       }
+      
       else {
         //kiểm tra xem sdt này có bao nhiêu phòng nếu phòng bằng 1
         // thì chuyển tới trang chủ luôn còn khác 1 thì sẽ có lựa chọn phòng
@@ -127,7 +128,7 @@ const Login = () => {
           <Image src={loginLogo} alt='logo' />
         </div>
         <div className="login-input">
-          <InputComponent variant='outlined' label='Số điện thoại' type='tel' onchange={HandleChangePhone} data={phone} onkeydown={handleKeyPressEnter}/>
+          <InputComponent variant='outlined' label='Số điện thoại' type='tel' onchange={HandleChangePhone} data={phone} onkeydown={handleKeyPressEnter} />
           <PhoneAndroidIcon className='login-input--icon' />
         </div>
 
@@ -154,11 +155,11 @@ const Login = () => {
             </Button>
             :
             <Button
-              
+
               variant="contained"
               className="login-btn--item"
               onClick={handleLogin}
-              
+
 
 
             >

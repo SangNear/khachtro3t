@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import "./page.scss"
 import Loading from '@/app/loading'
 import Typography from '@mui/material/Typography'
@@ -17,7 +17,12 @@ import { url } from 'inspector'
 import Image from 'next/image'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import sign from "../../../../public/assets/img/sgin.png"
+import html2convas from 'html2canvas'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 const ContactPage = () => {
+    const pdfRef = useRef<HTMLDivElement>(null);
     const [hasSignA, setHasSignA] = useState(false)
     const [hasSignB, setHasSignB] = useState(false)
     const [signA, setSignA] = useState<ReactSignatureCanvas | null>(null);
@@ -33,6 +38,27 @@ const ContactPage = () => {
     const [errorsOTP, setErrorsOTP] = useState("")
     const [openOpt, setOpenOtp] = useState(false)
     const [loading, setLoading] = useState(true)
+
+    const downloadPDF = () => {
+        const input = pdfRef.current;
+
+        if (input) {
+            html2canvas(input as HTMLDivElement).then((canvas) => {
+                // Your existing code for generating PDF
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4', true);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = 0;
+                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                pdf.save('invoice.pdf');
+            });
+        }
+    };
     const handleOpenOtp = async () => {
         try {
             console.log("id hop dong from click", hopdongApi?.data.hopDong.id);
@@ -237,37 +263,12 @@ const ContactPage = () => {
         setUrlB('')
         setHasSignB(false)
     }
-    const btnSignSave = {
-        border: "1px solid green",
-        color: 'green',
-        "&:hover": {
-            backgroundColor: '#fff',
-            border: "1px solid green",
-
-        }
-    }
-    const btnSignDelete = {
-        border: "1px solid red",
-        color: 'red',
-        "&:hover": {
-            backgroundColor: '#fff',
-            border: "1px solid red",
-
-        }
-    }
-    const btnText = {
-        fontSize: '12px',
-        "@media (max-width: 783px)": {
-            width: "100%",
-            minWidth: '320px',
-            maxWidth: '100%',
-        }
-    }
+    
 
     return (
 
-        <div className="contact-container">
-            <div className="contact-container--top">
+        <div className="contact-container" >
+            <div className="contact-container--top" ref={pdfRef} >
                 <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px" }}>Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px" }}>Độc lập - Tự do - Hạnh Phúc</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "16px" }}>--- o0o ---</Typography>
@@ -276,8 +277,8 @@ const ContactPage = () => {
 
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>BÊN A (BÊN CHO THUÊ):</Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Ông: <b>Trần Hồng Hiệp</b></Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- CCCD: <b>079082008653</b></Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Bà: <b>Phan Thị Kim Loan</b></Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- CCCD: <b>082191005666</b></Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "16px" }}>- Điện thoại & Zalo: <b>0398.771.881</b></Typography>
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>BÊN B (BÊN THUÊ):</Typography>
@@ -341,26 +342,11 @@ const ContactPage = () => {
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 5: PHƯƠNG THỨC THANH TOÁN</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền thuê thu mỗi tháng một lần vào ngày <b style={{ color: 'blue' }}>{hopdongApi?.data.hopDong.thanh_toan}</b> </Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thanh toán đúng qua ngân hàng của:  <b>TRẦN HỒNG HIỆP</b> </Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thanh toán đúng qua ngân hàng của:  <b>Phan Thị Kim Loan</b> </Typography>
                 <Stack direction='column' spacing={1} marginBottom='24px'>
                     <Stack direction='row' spacing={2} justifyContent='center'>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Vietcombank </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>0071 0024 4853 7</b> </Typography>
-                    </Stack>
-
-                    <Stack direction='row' spacing={2} justifyContent='center'>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Vietinbank </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>1018 7104 3785</b> </Typography>
-                    </Stack>
-
-                    <Stack direction='row' spacing={2} justifyContent='center'>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Agribank </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>6400 2054 7685 6</b> </Typography>
-                    </Stack>
-
-                    <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>ACB </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>1047 2526 9</b> </Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>91881</b> </Typography>
                     </Stack>
                 </Stack>
 
@@ -397,7 +383,7 @@ const ContactPage = () => {
 
 
 
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 8: TIỀN KHI KÝ HỢP ĐỒNG</Typography>
+                {/* <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 8: TIỀN KHI KÝ HỢP ĐỒNG</Typography>
                 <Stack direction='column' spacing={1} marginBottom='24px'>
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Từ ngày: </Typography>
@@ -459,83 +445,35 @@ const ContactPage = () => {
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 9: HIỆU LỰC HỢP ĐỒNG</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Hợp đồng này sẽ có hiệu lực ngay tại thời điểm bên thuê <b>xác nhận nhập mã OPT.</b> </Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Tại thời điểm xác nhận bên thuê có đầy đủ nhận thức và hiểu rõ hành vi của mình </Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Tại thời điểm xác nhận bên thuê có đầy đủ nhận thức và hiểu rõ hành vi của mình </Typography> */}
 
             </div>
             <div className="contact-container--signatures">
-                <Stack sx={{ width: '50%' }}>
-                    <Typography sx={{ textAlign: 'center', fontStyle: 'italic', fontWeight: 'bold' }}>Bên A</Typography>
-                    <div className='signature--item' >
-                        {urlA ?
-                            <img src={urlA} alt='signA' className='imgSign' />
-                            : <SignatureCanvas penColor='green'
-                                ref={data => setSignA(data)}
-                                canvasProps={{ className: 'sigCanvas' }} />}
+                <div className='contact-container--item'>
+                    <Typography sx={{ fontWeight: 'bold' }}>Đại diện bên A</Typography>
+                    <Image src={sign} alt='sign' className='img-sign' />
+                    <Typography style={{ fontStyle: 'italic' }}>Phan Thị Kim Loan</Typography>
+                </div>
+                <div className='contact-container--item'>
+                    <Typography sx={{ fontWeight: 'bold' }}>Đại diện bên B</Typography>
+                    {hopdongApi?.data.hopDong.signature ?
+                        <Image
+                            src={`https://ad.tro4u.com/images/hopdong/${hopdongApi.data.hopDong.id}/signature/${hopdongApi?.data.hopDong.signature}`}
+                            alt='sign'
+                            width={300}
+                            height={75}
+                            className='img-sign' />
+                        :
+                        ''
+                    }
+                    <Typography style={{ fontStyle: 'italic' }}>{hopdongApi?.data.hopDong.khach.ten_khach}</Typography>
 
-
-                    </div>
-
-                    <Stack direction='row' alignItems='center' justifyContent='center' marginTop="10px">
-                        {hasSignA ? <Button variant='outlined' onClick={handleChangeSignA}>Thay đổi</Button> :
-                            <Stack direction='row' gap={1}>
-                                <Button sx={btnSignDelete} variant='outlined' onClick={handleClearSignA}>
-                                    <DeleteOutlineOutlinedIcon />
-                                    <span className='btn-sign--text' >Xóa</span>
-                                </Button>
-                                <Button sx={btnSignSave} variant='outlined' onClick={handleSaveSignA}>
-                                    <SaveOutlinedIcon />
-                                    <span className='btn-sign--text' >Lưu</span>
-                                </Button>
-                            </Stack>
-
-
-
-                        }
-
-
-                    </Stack>
-
-
-                </Stack>
-
-
-                <Stack sx={{ width: '50%' }}>
-                    <Typography sx={{ textAlign: 'center', fontStyle: 'italic', fontWeight: 'bold' }}>Bên B</Typography>
-                    <div className='signature--item' >
-
-                        {urlB ?
-                            <img src={urlB} alt='signB' className='imgSign' style={{ textAlign: 'center' }} />
-                            : <SignatureCanvas penColor='green'
-                                ref={data => setSignB(data)}
-                                canvasProps={{ className: 'sigCanvas' }} />}
-                    </div>
-                    <Stack direction='row' alignItems='center' justifyContent='center' marginTop="10px">
-
-                        {hasSignB ? <Button variant='outlined' onClick={handleChangeSignB}>Thay đổi</Button> :
-                            <Stack direction='row' gap={1}>
-                                <Button sx={btnSignDelete} variant='outlined' onClick={handleClearSignB}>
-                                    <DeleteOutlineOutlinedIcon />
-                                    <span className='btn-sign--text'>Xóa</span>
-                                </Button>
-                                <Button sx={btnSignSave} variant='outlined' onClick={handleSaveSignB}>
-                                    <SaveOutlinedIcon />
-                                    <span className='btn-sign--text' >Lưu</span>
-                                </Button></Stack>
-
-
-
-                        }
-
-
-                    </Stack>
-                </Stack>
-
-
-
+                </div>
             </div>
             <div className="contact-container--bottom">
                 <Typography className='fontsize-mobile--tile' style={{ textAlign: "center", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Tình trạng hợp đồng</Typography>
-                {hopdongApi && hopdongApi?.data.hopDong.ngay_xac_nhan || isSign ?
+                <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", marginBottom: "24px", color: "#15a35e" }}>ĐÃ KÝ</Typography>
+                {/* {hopdongApi && hopdongApi?.data.hopDong.ngay_xac_nhan || isSign ?
                     <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", marginBottom: "24px", color: "#15a35e" }}>ĐÃ KÝ</Typography>
                     :
                     !openOpt ?
@@ -577,7 +515,7 @@ const ContactPage = () => {
                                 ''
                             }
                         </Stack>
-                }
+                } */}
 
 
 
@@ -606,6 +544,7 @@ const ContactPage = () => {
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "16px", }}>Ký hợp đồng bằng OTP:  </Typography>
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "16px", }}><b>334963459 13:28 01/11/2023</b></Typography>
                     </Stack>
+                    {/* <Button variant='contained' onClick={downloadPDF}>Xuat file pdf</Button> */}
                 </Stack>
             </div>
         </div>

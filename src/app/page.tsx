@@ -26,6 +26,7 @@ import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import { ApiHoaDonResponse, ThangData } from './api/hoadon'
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import DialogPayed from './components/dialogPayed/page'
+import Link from 'next/link'
 export default function Home() {
   const [openModalBill, setOpenModalBill] = useState(false)
   const [openModalPayed, setOpenModalPayed] = useState(false)
@@ -92,18 +93,17 @@ export default function Home() {
         // Replace '/login' with your actual login page route
         window.location.href = '/pages/login';
       } else {
-
-        const userData: DataApi = JSON.parse(userApi);
-
-
+        const userData:  DataApi = JSON.parse(userApi);
         if (dataLoginApi) {
           const dataLogin: Datalogin = JSON.parse(dataLoginApi);
 
-          // console.log("khach", userData.tinh_trang_hop_dong);
+          // console.log("khach", userData[0].tinh_trang_hop_dong);
           // console.log("hopdong", dataLogin);
         }
 
         let id_hop_dong = userData.id
+        console.log("id hop dong:", id_hop_dong);
+
         const clearLocalStorage = () => {
           // Clear localStorage
           localStorage.clear();
@@ -134,77 +134,61 @@ export default function Home() {
         const fetchData = async () => {
           try {
             const response = await fetch("https://ad.tro4u.com/api/version/1.0/hopdong/get-chi-tiet-hop-dong", {
+
               method: "POST",
               body: JSON.stringify({
                 id_hop_dong
               }),
               headers: {
                 "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "true"
               }
             })
 
             const dataApi: ApiHopdongResponse = await response.json();
-
-
             setDataSession(dataApi)
             setIsLoading(false)
             setGiathue(dataApi.data.hopDong.gia_thue)
             setTenphong(dataApi.data.hopDong.phong.ten)
           }
           catch (error) {
-
+            console.log(error);
           }
         }
 
         const fetchdataHoadon = async () => {
           try {
             const response = await fetch("https://ad.tro4u.com/api/version/1.0/hoadon/get-all-hoa-don-by-idhd", {
+
               method: "POST",
               body: JSON.stringify({
                 id_hop_dong
               }),
               headers: {
                 "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "true"
               }
+
             })
             const dataHoadon: ApiHoaDonResponse = await response.json()
+            console.log("data hoas don", dataHoadon);
+
             setHoadonApi(dataHoadon)
-
-
-
-            // const allthangObject = dataHoadon.data.allThang
-            // console.log("all tháng ", allthangObject);
-
-
-
-            // if (typeof allthangObject === 'object' && allthangObject !== null) {
-            //   const result: ThangHientai | undefined = convertArrayToObject(Object.entries(allthangObject));
-            //   console.log("result", result);
-            //   setChitiethoadonallThang(result);
-            // } else {
-            //   // Handle the case when allthangObject is not an object or is null
-            // }
-
-
           } catch (error) {
+            console.log(error);
 
           }
         }
-
         clearLocalStorageIfTimeOut()
         fetchdataHoadon()
         fetchData();
-
-
-
-
       }
     }
 
   }, []);
 
   console.log("data session", dataSession);
-
+  console.log("data session232", hoadonApi);
 
   const styleCircle = {
 
@@ -289,6 +273,23 @@ export default function Home() {
     }
 
   }
+  const dinhDangNgayThang = (chuoiNgayThang?: string) => {
+    // Chuyển đổi thành đối tượng Date
+    if (chuoiNgayThang) {
+      var ngayThang = new Date(chuoiNgayThang);
+
+      // Lấy thông tin về ngày, tháng, năm
+      var ngay = ngayThang.getDate();
+      var thang = ngayThang.getMonth() + 1; // Tháng bắt đầu từ 0
+      var nam = ngayThang.getFullYear();
+
+      // Định dạng lại theo yêu cầu
+      var chuoiDinhDang = (ngay < 10 ? '0' : '') + ngay + '/' + (thang < 10 ? '0' : '') + thang + '/' + nam;
+
+      return chuoiDinhDang;
+    }
+
+  }
 
   // const dateString = new Date();
   // const getday= dateString.getDate()
@@ -304,7 +305,10 @@ export default function Home() {
   }
   return (
     <React.Fragment>
-      {dataSession && dataSession.data.hopDong.tinh_trang_hop_dong === "Cho thuê" && dataSession?.data.hopDong.ngay_xac_nhan ?
+      {dataSession &&
+        dataSession.data.hopDong.tinh_trang_hop_dong === "Cho thuê" &&
+        dataSession?.data.hopDong.ngay_xac_nhan || dataSession &&
+        dataSession.data.hopDong.signature ?
 
 
         <ContainerComponent>
@@ -493,8 +497,9 @@ export default function Home() {
         <ContainerComponent2>
           <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} width=" 100%" gap='10px'>
             <div className="wrapp-container2--left">
-              <Stack padding="12px 20px" spacing={2}>
-                <Typography sx={{ fontSize: '24px', textAlign: 'center', fontWeight: 'bold' }}>Thông tin người đặt cọc</Typography>
+              <Stack padding="12px 10px" spacing={2}>
+                <Typography sx={{ fontSize: '24px', textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }}>Xác nhận đặt cọc</Typography>
+
                 <Stack direction="row" spacing={1}>
                   <Typography>Tên người nộp tiền:</Typography>
                   <Typography sx={{ fontWeight: "bold" }}>{dataSession && dataSession?.data.hopDong.khach.ten_khach}</Typography>
@@ -513,15 +518,48 @@ export default function Home() {
 
                 <Stack direction="row" spacing={1}>
                   <Typography sx={{ whiteSpace: 'nowrap' }}>Lý do:</Typography>
-                  <Typography sx={{}}>Đặt cọc giữ chỗ thuê <span style={{ fontWeight: 'bold' }}>{dataSession && dataSession?.data.hopDong.phong.loai} {dataSession && dataSession?.data.hopDong.phong.ten} </span>  đến ngày <span style={{ fontWeight: 'bold' }}>01/12/2023</span> </Typography>
+                  <Typography >Đặt cọc giữ chỗ thuê <span style={{ fontWeight: 'bold' }}>{dataSession && dataSession?.data.hopDong.phong.loai} {dataSession && dataSession?.data.hopDong.phong.ten} </span>  đến ngày <span style={{ fontWeight: 'bold' }}>{dataSession && dinhDangNgayThang(dataSession.data.hopDong.ngay_het_han)} </span>với các thỏa thuận sau: </Typography>
                 </Stack>
 
-                <Stack direction="column" spacing={1}>
-                  <Typography>Lưu ý:</Typography>
-                  <Typography sx={{ color: "red", fontStyle: 'italic', fontSize: '14px' }}>- Số tiền đã nộp trên sẽ được trừ vào tiền đặt cọc ký kết hợp đồng</Typography>
-                  <Typography sx={{ color: "red", fontStyle: 'italic', fontSize: '14px' }}>- Đến ngày <span style={{ fontWeight: 'bold' }}>01/12/2023</span>  người nộp tiền không ký hợp đồng sẽ chấp nhận bị mất toàn bộ số tiền đã trên.</Typography>
-                  <Typography sx={{ color: "red", fontStyle: 'italic', fontSize: '14px' }}>- Mọi thắc mắc liên hệ hotline: <span>0398.771.881</span> </Typography>
+                <Stack padding="12px 20px" spacing={0} alignItems='center' justifyContent='center'>
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ width: "100%", flex: '1', textAlign: 'right' }}>Tiền thuê:</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1' }}>{dataSession && dinhDangSo(dataSession?.data.hopDong.gia_thue)}</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ width: "100%", flex: '1', textAlign: 'right' }}>Tiền điện:</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1' }}>3.500</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền nước:</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>80.000</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền Net:</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>	100.000</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền Rác:</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>	50.000</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền Xe:	</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>100.000</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" spacing={2}>
+                    <Typography sx={{ flex: '1', textAlign: 'right', whiteSpace: 'nowrap' }}>Thời gian hợp đồng:</Typography>
+                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>{dataSession && dataSession?.data.hopDong.han_hop_dong} từ {dataSession && dinhDangNgayThang(dataSession.data.hopDong.ngay_het_han)}</Typography>
+                  </Stack>
+
                 </Stack>
+
+
 
               </Stack>
 
@@ -529,78 +567,55 @@ export default function Home() {
 
 
             <div className="wrapp-container2--right">
-              <Stack direction='column' justifyContent='space-between'>
-                <Stack padding="12px 20px" spacing={2} alignItems='center' justifyContent='center'>
-                  <Typography sx={{ fontSize: '24px', textAlign: 'center', fontWeight: 'bold' }}>Thỏa thuận thuê</Typography>
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ width: "100%", flex: '1', textAlign: 'right' }}>Tiền thuê:</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1' }}>{dataSession && dinhDangSo(dataSession?.data.hopDong.gia_thue)}</Typography>
+              <Stack direction='column' padding="12px 10px" height="100%" justifyContent='space-around' gap={4}>
+                <Stack direction="column" spacing={1}>
+                  <Typography sx={{ color: 'red', textDecoration: 'underline', fontWeight: 'bold' }}>Lưu ý:</Typography>
+                  <Stack direction='row' gap={1} alignItems='center'>
+                    <Typography sx={{ color: 'red' }}>1.</Typography>
+                    <Typography sx={{ color: "red", }}>Số tiền đã nộp trên sẽ được trừ vào tiền đặt cọc ký kết hợp đồng</Typography>
                   </Stack>
-
-
-
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ width: "100%", flex: '1', textAlign: 'right' }}>Tiền điện:</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1' }}>3.500</Typography>
+                  <Stack direction='row' gap={1} alignItems='flex-start'>
+                    <Typography sx={{ color: 'red' }}>2.</Typography>
+                    <Typography sx={{ color: "red", }}>Đến ngày <span style={{ fontWeight: 'bold' }}>{dataSession && dinhDangNgayThang(dataSession.data.hopDong.ngay_het_han)}</span>  người nộp tiền không ký hợp đồng sẽ chấp nhận bị mất toàn bộ số tiền đã trên.</Typography>
                   </Stack>
-
-
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền nước:</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>80.000</Typography>
+                  <Stack direction='row' gap={1} alignItems='center'>
+                    <Typography sx={{ color: 'red' }}>3.</Typography>
+                    <Typography sx={{ color: "red", }}>Mọi thắc mắc liên hệ hotline: <Link href='tel:0398771881'>0398 771 881</Link> </Typography>
                   </Stack>
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền Net:</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>	100.000</Typography>
-                  </Stack>
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền Rác:</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>	50.000</Typography>
-                  </Stack>
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Tiền Xe:	</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>100.000</Typography>
-                  </Stack>
-                  <Stack direction="row" width="100%" spacing={2}>
-                    <Typography sx={{ flex: '1', textAlign: 'right' }}>Thời gian hợp đồng:</Typography>
-                    <Typography sx={{ fontWeight: "bold", flex: '1', textAlign: 'left' }}>{dataSession && dataSession?.data.hopDong.han_hop_dong} từ 01/12/2023</Typography>
-                  </Stack>
-
-
-
-
 
                 </Stack>
 
-                <Stack sx={{ padding: '12px 20px', width: '100%', backgroundColor: '#15a35e', borderRadius: '6px' }} spacing={1}>
-                  <Stack direction='row' spacing={1}>
-                    <Typography sx={{ color: "#333", fontWeight: 'bold' }}>Người sale:</Typography>
-                    <Typography sx={{ fontWeight: 'bold', color: "#fff" }}></Typography>
-                  </Stack>
+                <Stack direction='column' alignItems='center' justifyContent='center' sx={{ padding: '12px 10px', width: '100%', border: '1px solid black', borderRadius: '20px' }} spacing={0}>
 
-                  <Stack direction='row' spacing={1}>
-                    <Typography sx={{ color: "#333", fontWeight: 'bold' }}>Người lập phiếu:</Typography>
-                    <Typography sx={{ fontWeight: 'bold', color: "#fff" }}>{dataSession && dataSession?.data.hopDong.user_tao.name} - {dataSession && dataSession?.data.hopDong.user_tao.phone}</Typography>
+                  <Stack direction='row' gap={1}>
+                    <Typography sx={{ whiteSpace: 'nowrap' }}>Thời gian lập phiếu: </Typography>
+                    <Typography sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>00:21 12/12/2023 </Typography>
                   </Stack>
-
-                  <Stack direction='row' spacing={1}>
-                    <Typography sx={{ color: "#333", fontWeight: 'bold' }}>Thời gian:</Typography>
-                    <Typography sx={{ fontWeight: 'bold', color: "#fff" }}>00:00 01/12/2023</Typography>
+                  <Stack direction='row' gap={1}>
+                    <Typography sx={{ whiteSpace: 'nowrap' }}>Người lập phiếu:  </Typography>
+                    <Typography sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Tên nhân sự </Typography>
                   </Stack>
-
+                  <Stack direction='row' gap={1}>
+                    <Typography sx={{ whiteSpace: 'nowrap' }}>Người Sale:  </Typography>
+                    <Typography sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Tên nhân sự </Typography>
+                  </Stack>
+                  <Stack direction='row' gap={1}>
+                    <Typography sx={{ whiteSpace: 'nowrap' }}>Người dẫn khách:  </Typography>
+                    <Typography sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Tên nhân sự </Typography>
+                  </Stack>
                 </Stack>
               </Stack>
 
             </div>
           </Stack>
-        </ContainerComponent2>
+        </ContainerComponent2 >
 
 
 
       }
 
 
-    </React.Fragment>
+    </React.Fragment >
 
 
   )

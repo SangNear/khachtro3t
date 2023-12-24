@@ -27,7 +27,6 @@ export interface DataApi {
   ngay_xac_nhan: string;
   otp: string;
   phone_gui: string;
-  
   phong: {
     avatar: string;
     ban_cong: number;
@@ -137,6 +136,10 @@ export interface DataApi {
   video_checkout: null | string;
   zns_canh_bao_du_no_lan_1: number;
   zns_canh_bao_du_no_lan_2: number;
+}
+export interface DataApiFalse {
+  status: string
+  message : string
 }
 export interface LoginApi {
   status: string

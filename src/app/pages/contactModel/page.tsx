@@ -10,10 +10,14 @@ import InputComponent from '@/app/components/textFieldComponent/InputComponent'
 import OtpInput from "react-otp-input";
 import CircularProgress from '@mui/material/CircularProgress';
 import { OtpResponse, OtpResponseSubmit } from '@/app/api/otp'
+import Image from 'next/image'
+import sign from "../../../../public/assets/img/sgin.png"
+import DialogSignatures from '@/app/components/dialogSignatures/page'
 const ContactModelPage = () => {
 
     const [hopdongApi, setHopdongApi] = useState<ApiHopdongResponse>()
-
+    const [openSign, setOpenSign] = useState(false)
+    const [imgSignB, setImgSignB] = useState<string | undefined>()
     const [isLoading, setIsLoading] = useState(true);
     const [otp, setOtp] = useState("");
     const [errorsOTP, setErrorsOTP] = useState("")
@@ -22,6 +26,14 @@ const ContactModelPage = () => {
     const [id_hop_dong, setIDhopdong] = useState<number>()
     const [openOpt, setOpenOtp] = useState(false)
     const [loading, setLoading] = useState(true)
+
+    const handleOpenDialogSign = () => {
+        setOpenSign(!openSign)
+    }
+    const handleCloseDialogSign = () => {
+        setOpenSign(false)
+    }
+
     const handleOpenOtp = async () => {
         try {
             console.log("id hop dong from click", hopdongApi?.data.hopDong.id);
@@ -135,7 +147,7 @@ const ContactModelPage = () => {
 
     console.log("api hop dong", hopdongApi?.data.hopDong.tinh_trang_hop_dong);
     console.log("id hop dong", id_hop_dong);
-    console.log("ma otp", otp);
+
 
 
 
@@ -174,13 +186,11 @@ const ContactModelPage = () => {
     const btnNotSign = {
         backgroundColor: '#15a35e',
         "&:hover ": {
-            
 
-            backgroundColor: '#15a35e',
-            opacity: "0.6",
-            span: {
 
-            }
+            backgroundColor: '#fff',
+
+            color: '#15a35e'
         }
     }
     const inputOtp = {
@@ -214,8 +224,8 @@ const ContactModelPage = () => {
 
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>BÊN A (BÊN CHO THUÊ):</Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Ông: <b>Trần Hồng Hiệp</b></Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- CCCD: <b>079082008653</b></Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Bà: <b>Phan Thị Kim Loan</b></Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- CCCD: <b>082191005666 </b></Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "16px" }}>- Điện thoại & Zalo: <b>0398.771.881</b></Typography>
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>BÊN B (BÊN THUÊ):</Typography>
@@ -243,12 +253,7 @@ const ContactModelPage = () => {
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "24px" }}>- Điều kiện hoàn cọc cho bên B là: hết thời hạn hợp đồng và phải báo trước 30 ngày.</Typography>
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 4: GIÁ CHO THUÊ</Typography>
-                {/* <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "4px" }}>Tiền thuê: <b>3.500.000</b> / tháng</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "4px" }}>Tiền điện: <b>3.500</b> / kwh</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "4px" }}>Tiền nước: <b>80.000</b> /người/tháng</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "4px" }}>Tiền Net: <b>100.000</b> / tháng</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "4px" }}>Tiền Rác: <b>50.000 </b> / tháng</Typography>
-                    <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "18px", marginBottom: "4px" }}>Tiền Xe: <b>100.000</b> xe/tháng</Typography> */}
+
                 <Stack direction='column' spacing={1} marginBottom="24px">
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền thuê: </Typography>
@@ -279,9 +284,9 @@ const ContactModelPage = () => {
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Điều 5: PHƯƠNG THỨC THANH TOÁN</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Tiền thuê thu mỗi tháng một lần vào ngày <b style={{ color: 'blue' }}>1 đến 3</b> </Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thanh toán đúng qua ngân hàng của:  <b>TRẦN HỒNG HIỆP</b> </Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "4px" }}>- Thanh toán đúng qua ngân hàng của:  <b>Phan Thị Kim Loan</b> </Typography>
                 <Stack direction='column' spacing={1} marginBottom='24px'>
-                    <Stack direction='row' spacing={2} justifyContent='center'>
+                    {/* <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Vietcombank </Typography>
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>0071 0024 4853 7</b> </Typography>
                     </Stack>
@@ -294,11 +299,11 @@ const ContactModelPage = () => {
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Agribank </Typography>
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>6400 2054 7685 6</b> </Typography>
-                    </Stack>
+                    </Stack> */}
 
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>ACB </Typography>
-                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>1047 2526 9</b> </Typography>
+                        <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", width: "100%" }}><b>91881</b> </Typography>
                     </Stack>
                 </Stack>
 
@@ -335,7 +340,7 @@ const ContactModelPage = () => {
 
 
 
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 8: TIỀN KHI KÝ HỢP ĐỒNG</Typography>
+                {/* <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 8: TIỀN KHI KÝ HỢP ĐỒNG</Typography>
                 <Stack direction='column' spacing={1} marginBottom='24px'>
                     <Stack direction='row' spacing={2} justifyContent='center'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "right", fontSize: "18px", width: "100%", }}>Tiền thuê </Typography>
@@ -391,10 +396,41 @@ const ContactModelPage = () => {
 
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px", marginBottom: "8px" }}>Điều 9: HIỆU LỰC HỢP ĐỒNG</Typography>
                 <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Hợp đồng này sẽ có hiệu lực ngay tại thời điểm bên thuê <b>xác nhận nhập mã OPT.</b> </Typography>
-                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Tại thời điểm xác nhận bên thuê có đầy đủ nhận thức và hiểu rõ hành vi của mình </Typography>
+                <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "18px", marginBottom: "8px", color: "red" }}>- Tại thời điểm xác nhận bên thuê có đầy đủ nhận thức và hiểu rõ hành vi của mình </Typography> */}
 
             </div>
-            <div className="contact-container--bottom">
+
+            <div className="contact-container--signatures">
+                <div className='contact-container--item'>
+                    <Typography sx={{ fontWeight: 'bold' }}>Đại diện bên A</Typography>
+                    <Image src={sign} alt='sign' className='img-sign' />
+                    <Typography style={{fontStyle: 'italic'}}>Phan Thị Kim Loan</Typography>
+                </div>
+                <div className='contact-container--item'>
+                    <Typography sx={{ fontWeight: 'bold' }}>Đại diện bên B</Typography>
+                    {hopdongApi && hopdongApi.data.hopDong.tinh_trang_hop_dong === 'Giữ chỗ' ?
+                        <Typography sx={{ fontStyle: 'italic', color: 'red' }}>Chờ ký</Typography>
+                        :
+                        imgSignB ?
+                            <Image src={imgSignB} alt='signB' className='img-sign' width={300} height={75} />
+                            :
+                            <Button
+                                variant="contained"
+                                sx={btnNotSign}>
+                                <span
+                                    style={{ textTransform: "none", display: 'flex', flexDirection: 'column' }}
+                                    onClick={handleOpenDialogSign} >
+                                    Tôi đã đọc và đồng ý
+                                    <span>Ký hợp đồng</span>
+                                </span>
+                            </Button>
+
+                    }
+                    
+                </div>
+            </div>
+
+            {/* <div className="contact-container--bottom">
                 <Typography className='fontsize-mobile--tile' style={{ textAlign: "center", fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>Tình trạng hợp đồng</Typography>
                 {hopdongApi && hopdongApi.data.hopDong.tinh_trang_hop_dong === 'Giữ chỗ' ?
                     <Typography className="fontsize-mobile" style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", marginBottom: "24px", color: "red" }}>Chờ ký</Typography>
@@ -404,7 +440,7 @@ const ContactModelPage = () => {
                             <Button variant="contained" sx={btnNotSign}><span style={{ textTransform: "none", display: 'flex', flexDirection: 'column' }} onClick={handleOpenOtp}>Tôi đã đọc và đồng ý <span>Ký hợp đồng</span></span></Button>
                         </Stack>
                         :
-                        <Stack spacing={2}>
+                        <Stack spacing={2} >
                             <Typography sx={{ textAlign: 'center', color: '#15a35e' }}>Mã xác thực sẽ được gửi qua Zalo của bạn</Typography>
                             <Stack marginBottom='24px' spacing={2} alignItems='center' justifyContent='center' direction='row'>
                                 <OtpInput
@@ -438,53 +474,7 @@ const ContactModelPage = () => {
                                 ''
                             }
                         </Stack>
-                    // !openOpt ?
-                    //     <Stack alignItems='center'>
-                    //         <Button variant="outlined" sx={btnNotSign}><span style={{ textTransform: "none" }} onClick={handleOpenOtp}>Chờ ký</span></Button>
-                    //     </Stack>
-                    //     :
-                    //     <Stack spacing={2}>
-                    //         <Typography sx={{ textAlign: 'center', color: '#15a35e' }}>Mã xác thực sẽ được gửi qua Zalo của bạn</Typography>
-                    //         <Stack marginBottom='16px' spacing={2} alignItems='center' justifyContent='center' direction='row'>
-                    //             <OtpInput
-                    //                 shouldAutoFocus
-                    //                 value={otp}
-                    //                 inputType="tel"
-                    //                 onChange={setOtp}
-                    //                 numInputs={4}
-                    //                 renderSeparator={"-"}
-                    //                 renderInput={(props) => <input {...props} />}
-                    //                 containerStyle={{
-                    //                     display: "flex",
-                    //                     justifyContent: "space-between",
-                    //                 }}
-                    //                 inputStyle={inputOtp}
-                    //             />
-                    //             {otp.length < 4 ?
-                    //                 <Button variant='outlined' sx={btnSubmitOtp} disabled>Xác nhận otp</Button>
-                    //                 :
-                    //                 <Button variant='outlined' sx={btnSubmitOtp} onClick={handleSubmitOtp}>Xác nhận otp</Button>
-                    //             }
-
-                    //         </Stack>
-                    //         {errorsOTP ?
-                    //             <Stack direction='row' alignContent='center ' justifyContent='center'>
-                    //                 <Typography sx={{ textAlign: 'center', marginTop: '5px !important', fontStyle: 'italic', color: 'red' }}> {errorsOTP}</Typography>
-
-                    //             </Stack>
-
-                    //             :
-                    //             ''
-                    //         }
-
-                    //     </Stack>
-
-
-
-
                 }
-
-
                 <Stack direction='column' spacing={1} marginBottom="24px" marginTop='24px'>
                     <Stack direction='row' spacing={1} justifyContent='left'>
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "16px", }}>Người Sale: </Typography>
@@ -511,7 +501,8 @@ const ContactModelPage = () => {
                         <Typography className="fontsize-mobile" style={{ textAlign: "left", fontSize: "16px", }}><b>334963459 13:28 01/11/2023</b></Typography>
                     </Stack>
                 </Stack>
-            </div>
+            </div> */}
+            <DialogSignatures open={openSign} close={handleCloseDialogSign} setImgSignB={setImgSignB} id_hop_dong={hopdongApi && hopdongApi?.data.hopDong.id} />
         </div>
 
 

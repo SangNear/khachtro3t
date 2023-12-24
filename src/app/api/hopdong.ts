@@ -40,6 +40,7 @@ interface HopDong {
   ngay_gui: null | any;
   ngay_xac_nhan: null | any;
   so_lan_gui_otp: null | any;
+  signature: string | null;
   zns_canh_bao_du_no_lan_1: number;
   zns_canh_bao_du_no_lan_2: number;
   created_at: string;

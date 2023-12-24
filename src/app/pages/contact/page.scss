@@ -15,38 +15,26 @@
 
     .contact-container--top {
         background-color: #fff;
-        padding: 8px 16px;
+        padding: 8px 16px;  
         border-radius: 6px;
     }
 
     .contact-container--signatures {
         background-color: #fff;
+        border-radius: 4px;
         padding: 8px 16px;
-        border-radius: 6px;
-
         display: flex;
-        justify-content: space-between;
-        gap: 10px;
 
-        .signature--item {
+        .contact-container--item {
             flex: 1;
-
-            text-align: center;
-            height: 150px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+            flex-direction: column;
 
-            .sigCanvas {
-                height: 100%;
-                width: 100%;
-                max-height: 200px;
-                border: 1px solid #e2e2e2;
-                border-radius: 4px;
-            }
-
-            .imgSign {
+            .img-sign {
                 width: 50%;
+                height: 50%;
             }
         }
     }

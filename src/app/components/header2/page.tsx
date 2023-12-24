@@ -140,7 +140,7 @@ const HeaderComponent2 = () => {
                                     }`}
 
                             >
-                                Mẫu hợp đồng thuê
+                                Hợp đồng thuê
                             </div>
                         </Link>
 
@@ -257,7 +257,7 @@ const HeaderComponent2 = () => {
                             } `}
                     >
                         <FileOpenOutlinedIcon />
-                        <span>Mẫu hợp đồng thuê</span>
+                        <span>Hợp đồng thuê</span>
                     </Link>
                 </div>
             </div>

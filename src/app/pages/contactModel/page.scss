@@ -19,6 +19,26 @@
         border-radius: 6px;
     }
 
+    .contact-container--signatures {
+        background-color: #fff;
+        border-radius: 4px;
+        padding: 8px 16px;
+        display: flex;
+
+        .contact-container--item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-direction: column;
+
+            .img-sign {
+                width: 50%;
+                height: 50%;
+            }
+        }
+    }
+
     .contact-container--bottom {
         background-color: #fff;
         padding: 8px 16px;
@@ -31,6 +51,7 @@
     .fontsize-mobile {
         font-size: 12px !important;
     }
+
     .fontsize-mobile--tile {
         font-size: 18px !important;
     }
